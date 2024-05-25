@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Helpers\HelperModel;
 use App\Models\{Department, Position};
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Arr;
 
 class PositionSeeder extends Seeder
 {
@@ -19,7 +20,7 @@ class PositionSeeder extends Seeder
                         'name' => $positionName,
                         'department_id' => $department_id->id,
                         'company_id' => $department_id->company_id
-                    ], Position::class);
+                    ], Position::class, true);
                 }
             }
         }

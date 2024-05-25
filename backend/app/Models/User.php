@@ -27,6 +27,14 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasOneThrough(Position::class, Employee::class,'id','id','employee_id','position_id')->withoutGlobalScope(NotDeletedScope::class);
     }
 
+    public function createdBy():BelongsTo{
+        return $this->belongsTo(Employee::class,'created_by','id');
+    }
+
+    public function modifiedBy(): BelongsTo{
+        return $this->belongsTo(Employee::class,'modified_by','id');
+    }
+
     public function getJWTIdentifier()
     {
         return $this->getKey();
@@ -39,7 +47,7 @@ class User extends Authenticatable implements JWTSubject
             'email' => $this->employee->email,
             'photo' => $this->photo,
             'position' => $this->position->name,
-            'department' => $this->position->department->name,
+            'department' => $this->position->department ? $this->position->department->name : '',
             'company' => $this->company->legal_name
         ];
     }

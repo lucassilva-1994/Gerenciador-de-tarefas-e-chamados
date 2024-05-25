@@ -17,8 +17,6 @@ return new class extends Migration
             $table->string('photo', 100)->nullable();
             $table->dateTime('created_at');
             $table->dateTime('updated_at')->nullable();
-            $table->uuid('created_by')->nullable();
-            $table->uuid('modified_by')->nullable();
             $table->foreignUuid('company_id')->references('id')->on('companies')->cascadeOnDelete();
         });
     }

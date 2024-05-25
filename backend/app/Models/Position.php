@@ -17,10 +17,18 @@ class Position extends Model
     public $timestamps = false;
 
     public function department(): BelongsTo{
-        return $this->belongsTo(Department::class);
+        return $this->belongsTo(Department::class,'department_id','id');
     }
 
     public function employees(): HasMany{
         return $this->hasMany(Employee::class);
+    }
+
+    public function createdBy():BelongsTo{
+        return $this->belongsTo(Employee::class,'created_by','id')->select(['id','name']);
+    }
+
+    public function modifiedBy(): BelongsTo{
+        return $this->belongsTo(Employee::class,'modified_by','id')->select(['id','name']);
     }
 }

@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Helpers\HelperModel;
 use App\Models\{Employee, User};
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Arr;
 
 class UserSeeder extends Seeder
 {
@@ -15,7 +16,8 @@ class UserSeeder extends Seeder
             self::setData([
                 'employee_id' => $employe->id,
                 'password' => '12345678910',
-                'company_id' => $employe->company_id
+                'company_id' => $employe->company_id,
+                'created_by' =>  Arr::random($employe->company->employees->pluck('id')->toArray())
             ], User::class);
         }
     }

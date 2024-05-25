@@ -8,7 +8,7 @@ use Ramsey\Uuid\Uuid;
 trait HelperModel
 {
     use HelperMessage;
-    private static function setData(array $data, $model)
+    private static function setData(array $data, $model, $isSeeder = false)
     {
         $fillable = (new $model)->getFillable();
         //Verifica se os campos enviados na requisição está na propriedade Fillable no Model, caso não esteja o campo que foi enviado no corpo da requisição não será persistido
@@ -18,7 +18,7 @@ trait HelperModel
         $data['created_at'] = now();
         //Logo abaixo está a verificação se os campos existem na propriedade fillable, caso existir a trait fica responsável por setar esses valores, sem a necessidade de enviar na requisição
         if (in_array('created_by', $fillable) && auth()->check()) {
-            $data['created_by'] = auth()->user()->id;
+            $data['created_by'] = auth()->user()->employee_id;
         }
         if (in_array('company_id', $fillable) && auth()->check()) {
             $data['company_id'] = auth()->user()->company_id;
@@ -26,7 +26,7 @@ trait HelperModel
         if (in_array('password', $fillable)) {
             $data['password'] = bcrypt($data['password']);
         }
-        if (isset($data['name'])) {
+        if (isset($data['name']) && !$isSeeder) {
             $data['name'] = self::ensureUniqueValue("name",$data['name'], $model);
         }
         //Success e Error são métodos presentes na trait HelperMessage, vai retornar uma mensagem generica em caso de sucesso ou erro, sem precisar setar no controller, ou seja nesse caso os controller estão apenas enviondo os dados sem a necessidade de tratar retorno
@@ -34,17 +34,21 @@ trait HelperModel
             $model::updateOrCreate($data);
             return self::success();
         } catch (\Throwable $th) {
-            return self::error();
+            return $th->getMessage();
         }
     }
 
     private static function updateData(array $data, $model, array $where)
     {
+        //Verificando se há um ID na tabela, caso não existir o ID informado, o metodo setData será chamado.
+        if(!$model::whereId($where['id'])->exists()){
+            return self::setData($data, $model);
+        }
         $fillable = (new $model)->getFillable();
         $data = array_intersect_key($data, array_flip($fillable));
         $data['updated_at'] = now();
         if (in_array('modified_by', $fillable) && auth()->check()) {
-            $data['modified_by'] = auth()->user()->id;
+            $data['modified_by'] = auth()->user()->employee_id;
         }
         try {
             $model::updateOrCreate($where, $data);
@@ -60,7 +64,7 @@ trait HelperModel
         $data['deleted'] = 1;
         $data['updated_at'] = now();
         if (in_array('modified_by', (new $model)->getFillable()) && auth()->check()) {
-            $data['modified_by'] = auth()->user()->id;
+            $data['modified_by'] = auth()->user()->employee_id;
         }
         try {
             $model::updateOrCreate($where, $data);

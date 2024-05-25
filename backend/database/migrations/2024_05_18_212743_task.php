@@ -19,9 +19,7 @@ return new class extends Migration
             $table->dateTime('created_at');
             $table->dateTime('updated_at')->nullable();
             $table->foreignUuid('owner_id')->nullable()->references('id')->on('employees');
-            $table->foreignUuid('viewed_by')->nullable()->references('id')->on('users');
-            $table->foreignUuid('created_by')->nullable()->references('id')->on('users');
-            $table->foreignUuid('modified_by')->nullable()->references('id')->on('users');
+            $table->foreignUuid('viewed_by')->nullable()->references('id')->on('employees');
             $table->foreignUuid('company_id')->references('id')->on('companies')->cascadeOnDelete();
             $table->foreignUuid('support_ticket_id')->nullable()->references('id')->on('support_tickets')->cascadeOnDelete();
             $table->foreignUuid('project_id')->nullable()->references('id')->on('projects');

@@ -14,7 +14,7 @@ class EmployeeSeeder extends Seeder
     {
         $companies = Company::get();
         foreach ($companies as $company) {
-                for ($i = 0; $i < rand(15,30); $i++) {
+                for ($i = 0; $i < rand(100,200); $i++) {
                     $name = fake()->name();
                     $email = self::generateEmail($name);
                     $verify = Employee::whereEmail($email)->exists();
@@ -24,7 +24,7 @@ class EmployeeSeeder extends Seeder
                             'email' => $email,
                             'company_id' => $company->id,
                             'position_id' => Arr::random($company->positions->pluck('id')->toArray())
-                        ],Employee::class);
+                        ],Employee::class, true);
                     }
             }
         }

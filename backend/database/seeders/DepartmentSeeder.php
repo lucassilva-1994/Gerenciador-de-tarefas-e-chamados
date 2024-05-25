@@ -12,13 +12,12 @@ class DepartmentSeeder extends Seeder
     public function run(): void
     {
         $companies = Company::get(['id']);
-
         foreach ($companies as $company) {
             foreach (self::departments() as $department) {
                 self::setData([
                     'name' => $department,
                     'company_id' => $company->id
-                ],Department::class);
+                ],Department::class, true);
             }
         }
     }

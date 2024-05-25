@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
 import { User } from 'src/app/models/User';
@@ -11,6 +11,7 @@ import { UserService } from 'src/app/services/user.service';
 })
 export class LayoutComponent implements OnInit{
   user$: Observable<User | null>;
+  @Input() title: string = 'Layout';
   constructor(private userService: UserService, private router: Router) { }
   ngOnInit(): void {
     this.user$ = this.userService.getUser();

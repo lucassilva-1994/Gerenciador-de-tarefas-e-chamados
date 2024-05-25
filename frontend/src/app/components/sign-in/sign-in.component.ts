@@ -15,18 +15,19 @@ export class SignInComponent implements OnInit {
   constructor(private formBuilder: FormBuilder, private authService: AuthService, private router: Router) { }
   ngOnInit(): void {
     this.form = this.formBuilder.group({
-      email: [],
-      password: []
+      email: [''],
+      password: ['']
     });
   }
 
   auth() {
     this.authService.auth(this.form.getRawValue() as User).subscribe({
+      
       next: () => {
         this.router.navigate(['/departments'])
       },
-      error: () => {
-        this.message = 'Falha na autenticação.'
+      error: response => {
+        this.message = response
       }
     });
   }

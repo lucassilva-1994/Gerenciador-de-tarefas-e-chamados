@@ -11,7 +11,7 @@ export class AuthService{
     constructor(private httpClient: HttpClient, private userService: UserService){}
 
     auth(user: User): Observable<{message: string}>{
-        return this.httpClient.post<{message:string}>(apiUrl+'sign-in',user)
+        return this.httpClient.post<{message:string}>(apiUrl+'/sign-in',user)
         .pipe(tap((response) => {
              this.userService.setToken(response.toString());
         }));

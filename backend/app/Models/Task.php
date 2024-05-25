@@ -32,11 +32,11 @@ class Task extends Model
         return $this->belongsTo(Employee::class,'owner_id','id');
     }
 
-    public function createdBy(): BelongsTo{
-        return $this->belongsTo(User::class, 'created_by','id');
+    public function createdBy():BelongsTo{
+        return $this->belongsTo(Employee::class,'created_by','id');
     }
 
     public function modifiedBy(): BelongsTo{
-        return $this->belongsTo(User::class, 'modified_by','id');
+        return $this->belongsTo(Employee::class,'modified_by','id');
     }
 }

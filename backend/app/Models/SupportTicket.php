@@ -17,22 +17,22 @@ class SupportTicket extends Model
     public $timestamps = false;
 
     public function project(): BelongsTo{
-        return $this->belongsTo(Project::class,'project_id','id');
+        return $this->belongsTo(Project::class,'project_id','id')->select(['id','name']);
     }
 
     public function viewer(): BelongsTo{
-        return $this->belongsTo(User::class,'viewed_by','id');
+        return $this->belongsTo(User::class,'viewed_by','id')->select(['id','name']);
     }
 
     public function owner(): BelongsTo{
-        return $this->belongsTo(Employee::class,'owner_id','id');
+        return $this->belongsTo(Employee::class,'owner_id','id')->select(['id','name']);
     }
 
-    public function createdBy(): BelongsTo{
-        return $this->belongsTo(User::class, 'created_by','id');
+    public function createdBy():BelongsTo{
+        return $this->belongsTo(Employee::class,'created_by','id')->select(['id','name']);
     }
 
     public function modifiedBy(): BelongsTo{
-        return $this->belongsTo(User::class, 'modified_by','id');
+        return $this->belongsTo(Employee::class,'modified_by','id')->select(['id','name']);
     }
 }

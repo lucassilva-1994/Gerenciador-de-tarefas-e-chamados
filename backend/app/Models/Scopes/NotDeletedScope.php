@@ -7,6 +7,6 @@ class NotDeletedScope implements Scope
 {
     public function apply(Builder $builder, Model $model): void
     {
-        $builder->where('deleted', 0);
+        $builder->where('deleted', 0)->orderBy('sequence','DESC');
     }
 }

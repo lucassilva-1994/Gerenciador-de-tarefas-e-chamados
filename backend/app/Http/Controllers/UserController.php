@@ -27,7 +27,7 @@ class UserController extends Controller
         return auth()->user()->load(['company','employee']);
     }
 
-    public function showAll(){
+    public function show(){
         return User::whereCompanyId(auth()->user()->company_id)->get();
     }
 
@@ -35,7 +35,7 @@ class UserController extends Controller
         return $user->company_id !== auth()->user()->company_id ? abort(403, 'Acesso negado') : $user->load(['company:id,legal_name','employee:id,name,email','position']);
     }
 
-    public function create(UserRequest $request){
+    public function store(UserRequest $request){
         return self::setData($request->all(), User::class); 
     }
 }
