@@ -1,8 +1,7 @@
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpParams } from "@angular/common/http";
 import { Inject, Injectable, InjectionToken } from "@angular/core";
 import { Observable, take } from "rxjs";
 import { environment } from "src/environments/environment";
-
 export const RESOURCE_URL = new InjectionToken<string>('RESOURCE_URL');
 
 @Injectable({ providedIn: 'root' })
@@ -13,9 +12,13 @@ export class CrudService<Model> {
         this.apiUrl = `${environment.apiUrl}/${resourceUrl}`;
     }
 
-    show(): Observable<Model[]> {
-        return this.httpClient.get<Model[]>(`${this.apiUrl}/show`)
-            .pipe(take(1));;
+    show(perPage: number, page: number, search: string = ''): Observable<{ pages: number, total: number, search: string, itens: Model[] }> {
+        const params = new HttpParams()
+            .set('perPage', perPage)
+            .set('page', page)
+            .set('search', search);
+        return this.httpClient.get<{ pages: number, total: number, search: string, itens: Model[]}>(`${this.apiUrl}/show`, { params })
+            .pipe(take(1));
     }
 
     showById(id: string): Observable<Model> {
@@ -23,13 +26,13 @@ export class CrudService<Model> {
             .pipe(take(1));;
     }
 
-    store(model: Model) {
-        return this.httpClient.post<Model>(`${this.apiUrl}/store`, model)
+    store(model: Model): Observable<{ message: string }> {
+        return this.httpClient.post<{ message: string }>(`${this.apiUrl}/store`, model)
             .pipe(take(1));;
     }
 
-    update(model: Model, id: string) {
-        return this.httpClient.put<Model>(`${this.apiUrl}/update/${id}`, model)
+    update(model: Model, id: string): Observable<{ message: string }> {
+        return this.httpClient.put<{ message: string }>(`${this.apiUrl}/update/${id}`, model)
             .pipe(take(1));;
     }
 

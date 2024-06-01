@@ -29,6 +29,7 @@
               "src/assets/css/bootstrap.css"
             ],
             "scripts": [
+              "src/assets/js/bootstrap.js"
             ]
           },
           "configurations": {

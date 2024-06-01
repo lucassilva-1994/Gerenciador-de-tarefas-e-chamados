@@ -8,6 +8,17 @@ class EmployeeController extends CRUDController
 {
     public function __construct()
     {
-        parent::__construct(Employee::class,['position','user','company','createdBy','modifiedBy'], EmployeeRequest::class);
+        parent::__construct(
+            Employee::class,
+            ['position','department','hasUser','company','createdBy','modifiedBy'], 
+            EmployeeRequest::class,
+            [
+                    'name', 'email',
+                    'department' => ['departments.name'],
+                    'position' => ['positions.name'],
+                    'createdBy' => ['name'],
+                    'modifiedBy' => ['name']
+            ]
+        );
     }
 }

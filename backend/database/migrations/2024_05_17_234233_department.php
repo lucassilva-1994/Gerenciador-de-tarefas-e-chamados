@@ -11,7 +11,7 @@ return new class extends Migration
     {
         Schema::create($this->table, function(Blueprint $table){
             $table->uuid('id')->primary();
-            $table->bigInteger('sequence');
+            $table->integer('sequence');
             $table->string('name', 40);
             $table->boolean('deleted')->default(0);
             $table->dateTime('created_at');

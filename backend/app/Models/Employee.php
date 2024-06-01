@@ -15,10 +15,10 @@ class Employee extends Model
     protected $fillable = ['id','sequence','name','email','created_by','modified_by','deleted','created_at','updated_at','position_id','company_id'];
     public $incrementing = false;
     public $timestamps = false;
-    protected $hidden = ['position_id','company_id'];
+    protected $hidden = ['position_id','company_id','updated_at'];
 
-    public function user(): HasOne{
-        return $this->hasOne(User::class)->select(['id as user_id','employee_id']);
+    public function hasUser(): HasOne{
+        return $this->hasOne(User::class)->select(['id','employee_id']);
     }
 
     public function company(): BelongsTo{
@@ -28,6 +28,11 @@ class Employee extends Model
     public function position(): BelongsTo{
         return $this->belongsTo(Position::class)->select(['id','name']);
     }
+
+    public function department(): HasOneThrough {
+        return $this->hasOneThrough(Department::class, Position::class, 'id', 'id', 'position_id', 'department_id')->select('departments.name');
+    }
+    
 
     public function createdBy():BelongsTo{
         return $this->belongsTo(Employee::class,'created_by','id')->select(['id','name']);

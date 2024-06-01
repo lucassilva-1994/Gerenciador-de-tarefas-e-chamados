@@ -3,5 +3,6 @@ import { Model } from "./Model";
 
 export class User extends Model{
     email: string;
-    employee: Employee
+    employee: Employee;
+    company: string;
 }

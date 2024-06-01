@@ -16,23 +16,23 @@ class User extends Authenticatable implements JWTSubject
     public $timestamps = false;
 
     public function company(): BelongsTo{
-        return $this->belongsTo(Company::class);
+        return $this->belongsTo(Company::class)->select(['id','legal_name']);
     }
 
     public function employee(): BelongsTo{
-        return $this->belongsTo(Employee::class);
+        return $this->belongsTo(Employee::class)->select(['id','name','email']);
     }
 
     public function position(): HasOneThrough{
         return $this->hasOneThrough(Position::class, Employee::class,'id','id','employee_id','position_id')->withoutGlobalScope(NotDeletedScope::class);
     }
-
+    
     public function createdBy():BelongsTo{
-        return $this->belongsTo(Employee::class,'created_by','id');
+        return $this->belongsTo(Employee::class,'created_by','id')->select(['id','name']);
     }
 
     public function modifiedBy(): BelongsTo{
-        return $this->belongsTo(Employee::class,'modified_by','id');
+        return $this->belongsTo(Employee::class,'modified_by','id')->select(['id','name']);
     }
 
     public function getJWTIdentifier()

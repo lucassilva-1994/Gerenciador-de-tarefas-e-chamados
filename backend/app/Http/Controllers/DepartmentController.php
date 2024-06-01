@@ -8,6 +8,17 @@ class DepartmentController extends CRUDController
 {
     public function __construct()
     {
-        parent::__construct(Department::class,['positions','positions.employees','createdBy','modifiedBy'], DepartmentRequest::class);
+        parent::__construct(
+            Department::class,
+            ['positions','employees','createdBy','modifiedBy'], 
+            DepartmentRequest::class,
+            [
+                'name',
+                'positions' => ['positions.name'],
+                'employees' => ['employees.name'],
+                'createdBy' => ['name'],
+                'modifiedBy' => ['name']
+            ]
+        );
     }
 }

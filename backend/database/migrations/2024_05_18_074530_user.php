@@ -11,7 +11,7 @@ return new class extends Migration
     {
         Schema::create($this->table, function(Blueprint $table){
             $table->uuid('id')->primary();
-            $table->bigInteger('sequence');
+            $table->integer('sequence');
             $table->foreignUuid('employee_id')->references('id')->on('employees')->cascadeOnDelete();
             $table->string('password', 60);
             $table->string('photo', 100)->nullable();

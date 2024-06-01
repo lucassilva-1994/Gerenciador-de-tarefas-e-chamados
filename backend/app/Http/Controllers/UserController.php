@@ -24,7 +24,7 @@ class UserController extends Controller
     }
 
     public function whoAmI(){
-        return auth()->user()->load(['company','employee']);
+        return auth()->user()->load(['company','employee','position','createdBy','modifiedBy']);
     }
 
     public function show(){

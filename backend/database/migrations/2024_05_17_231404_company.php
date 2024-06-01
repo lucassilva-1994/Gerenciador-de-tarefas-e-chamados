@@ -11,7 +11,7 @@ return new class extends Migration
     {
         Schema::create($this->table, function(Blueprint $table){
             $table->uuid('id')->primary();
-            $table->bigInteger('sequence');
+            $table->integer('sequence'); 
             $table->string('legal_name', 100);
             $table->string('trade_name', 100)->nullable();
             $table->string('cnpj', 18)->unique();

@@ -11,7 +11,7 @@ class CompanySeeder extends Seeder
     use HelperModel;
     public function run(): void
     {
-        for ($i = 0; $i < 10; $i++) {
+        for ($i = 0; $i < 30; $i++) {
             $trade_name = fake()->company();
             $legal_name = fake()->company();
             $cnpj = Generator::cnpj(true);

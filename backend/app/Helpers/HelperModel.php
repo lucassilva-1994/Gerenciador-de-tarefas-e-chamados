@@ -3,6 +3,7 @@
 namespace App\Helpers;
 
 use App\Models\Scopes\{CompanyScope, NotDeletedScope};
+use Illuminate\Support\Facades\DB;
 use Ramsey\Uuid\Uuid;
 
 trait HelperModel
@@ -77,8 +78,11 @@ trait HelperModel
     //Pegando o último registro na tabela em questão, ignorando se os mesmos fazem parte da mesma empresa ou se está com o campo "deleted" como "true"
     private static function setSequence($model)
     {
-        $lastSequence = $model::withoutGlobalScope(CompanyScope::class, NotDeletedScope::class)->latest('sequence')->first();
-        return $lastSequence ? $lastSequence->sequence += 1 : 1;
+        return DB::transaction(function () use ($model) {
+            return $model::withoutGlobalScope(CompanyScope::class, NotDeletedScope::class)
+                ->lockForUpdate()
+                ->max('sequence') + 1;
+        });
     }
 
     private static function setUuid()

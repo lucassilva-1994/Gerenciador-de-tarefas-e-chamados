@@ -1,12 +1,31 @@
 <app-layout [title]="title">
-    <form [formGroup]="form" (submit)="id ? update(id) : store()" class="d-flex justify-content-end">
-        <div class="input-group">
-            <input type="text" formControlName="name" class="form-control"
-                placeholder="Insira o nome do departamento" />
-            <button type="submit" class="btn btn-primary">Enviar</button>
+    <div class="row">
+        <div class="col-12 col-md-6">
+            <form [formGroup]="form" (submit)="id ? update(id) : store()" class="d-flex justify-content-end">
+                <div class="input-group">
+                    <input type="text" formControlName="name" class="form-control" placeholder="Insira o nome do departamento" />
+                    <button type="submit" class="btn btn-primary">
+                        <i [ngClass]="id ? 'fas fa-sync' : 'fas fa-paper-plane'"></i> {{ id ? 'Atualizar' : 'Enviar' }}
+                    </button>
+                </div>
+            </form>
         </div>
-    </form>
-    <div class="table-responsive mt-3">
+        <div class="col-12 col-md-5 mt-3 mt-md-0">
+            <div class="d-flex align-items-center">
+                <input type="search" [(ngModel)]="search" (keyup)="filter()" class="form-control me-3" placeholder="Digite sua busca aqui..." />
+            </div>
+        </div>
+        <div class="col-12 col-md-1 mt-3 mt-md-0">
+            <div class="d-flex align-items-center">
+                <select [(ngModel)]="perPage" (change)="onChangePerPage($event)" class="form-select">
+                    <option *ngFor="let option of options" [value]="option">{{ option }}</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    
+    <app-spinner [loading]="loading"></app-spinner>
+    <div class="table-responsive mt-3"  style="max-height: 400px; overflow-y: auto;">
         <table class="table table-striped text-nowrap">
             <thead class="table-dark">
                 <tr>
@@ -19,14 +38,18 @@
                 </tr>
             </thead>
             <tbody>
-                <tr *ngFor="let department of departments$ | async">
-                    <td>{{ department.sequence }} - {{ department.name }}</td>
+                <tr *ngFor="let department of departments">
+                    <td> {{ department.name }}</td>
                     <td>{{ department.positions.length }}</td>
-                    <td>{{ getTotalEmployees(department) }}</td>
-                    <td>{{ department.created_by.name }}</td>
+                    <td>{{ department.employees.length }}</td>
+                    <td>{{ department.created_by ? department.created_by.name : 'Não informado' }}</td>
                     <td>{{ department.modified_by ? department.modified_by.name : 'Não alterado' }}</td>
                     <td>
                         <span class="btn-group btn-group-sm">
+                            <button class="btn btn-success" type="button" data-bs-toggle="modal"
+                                data-bs-target="#position" (click)="openModal(department)">
+                                <i class="fas fa-plus"></i>
+                            </button>
                             <a [routerLink]="['/departments',department.id]" class="btn btn-primary">
                                 <i class="fas fa-edit"></i>
                             </a>
@@ -36,7 +59,59 @@
                         </span>
                     </td>
                 </tr>
+                <tr *ngIf="departments.length == 0">
+                    <td colspan="7" class="text-center">
+                        Nenhum registro encontrado
+                        <span *ngIf="search">para <strong>{{ search }}</strong></span>
+                    </td>
+                </tr>
             </tbody>
         </table>
+    </div>
+    <div class="d-flex justify-content-between align-items-center mb-3" *ngIf="pages != 0">
+        <div class="dataTables_info">
+            Página {{ page }} de {{ pages }}
+        </div>
+        <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-end">
+                <li class="page-item" [class.disabled]="page === 1">
+                    <a class="page-link" (click)="changePage(page - 1)">
+                        <span>&laquo;</span>
+                    </a>
+                </li>
+                <li class="page-item" *ngFor="let p of pageNumbers()" [class.active]="p === page">
+                    <a class="page-link" (click)="changePage(p)">{{ p }}</a>
+                </li>
+                <li class="page-item" [class.disabled]="page === pages">
+                    <a class="page-link" (click)="changePage(page + 1)">
+                        <span>&raquo;</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    <div class="modal fade" id="position" tabindex="-1" aria-hidden="true" style="display:none;">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5">{{ departmentName }}</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form [formGroup]="formPosition" (submit)="storePosition()" class="d-flex justify-content-end">
+                        <div class="input-group">
+                            <input type="hidden" formControlName="department_id" />
+                            <input type="text" formControlName="name" class="form-control"
+                                placeholder="Insira o nome do cargo" />
+                            <button type="submit" class="btn btn-primary">Enviar</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
     </div>
 </app-layout>

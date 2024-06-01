@@ -12,11 +12,16 @@ class Department extends Model
 {
     protected $table = 'departments';
     protected $primaryKey = 'id';
-    protected $fillable = ['id','sequence','name','created_by','modified_by','deleted','created_at','updated_at','company_id'];
+    protected $fillable = ['id','sequence','sequence', 'name','created_by','modified_by','deleted','created_at','updated_at','company_id'];
     public $incrementing = false;
     public $timestamps = false;
+
     public function positions(): HasMany{
         return $this->hasMany(Position::class);
+    }
+
+    public function employees(): HasManyThrough {
+        return $this->hasManyThrough(Employee::class, Position::class, 'department_id', 'position_id')->select(['employees.name']);;
     }
 
     public function createdBy():BelongsTo{

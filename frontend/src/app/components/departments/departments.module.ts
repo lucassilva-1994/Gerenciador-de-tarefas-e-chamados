@@ -4,7 +4,7 @@ import { CommonModule } from '@angular/common';
 import { DepartmentsRoutingModule } from './departments-routing.module';
 import { DepartmentsComponent } from './departments.component';
 import { SharedModule } from '../shared/shared.module';
-import { ReactiveFormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 
 @NgModule({
@@ -15,7 +15,8 @@ import { ReactiveFormsModule } from '@angular/forms';
     CommonModule,
     DepartmentsRoutingModule,
     SharedModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    FormsModule
   ]
 })
 export class DepartmentsModule { }
