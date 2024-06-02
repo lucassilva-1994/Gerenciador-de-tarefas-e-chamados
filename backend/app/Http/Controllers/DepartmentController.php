@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 use App\Http\Requests\DepartmentRequest;
 use App\Models\Department;
+use Illuminate\Support\Facades\Gate;
 
 class DepartmentController extends CRUDController
 {

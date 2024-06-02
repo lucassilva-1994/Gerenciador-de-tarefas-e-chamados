@@ -12,7 +12,7 @@ export class CrudService<Model> {
         this.apiUrl = `${environment.apiUrl}/${resourceUrl}`;
     }
 
-    show(perPage: number, page: number, search: string = ''): Observable<{ pages: number, total: number, search: string, itens: Model[] }> {
+    show(perPage: number = 10, page: number = 1, search: string = ''): Observable<{ pages: number, total: number, search: string, itens: Model[] }> {
         const params = new HttpParams()
             .set('perPage', perPage)
             .set('page', page)

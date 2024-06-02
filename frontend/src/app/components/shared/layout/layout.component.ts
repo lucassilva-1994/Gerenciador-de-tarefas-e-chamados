@@ -11,7 +11,7 @@ import { UserService } from 'src/app/services/user.service';
 })
 export class LayoutComponent implements OnInit{
   user$: Observable<User | null>;
-  @Input() title: string = 'Layout';
+  @Input() title: string = '';
   constructor(private userService: UserService, private router: Router) { }
   ngOnInit(): void {
     this.user$ = this.userService.getUser();

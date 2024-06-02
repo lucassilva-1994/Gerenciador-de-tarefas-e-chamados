@@ -14,8 +14,8 @@ class EmployeeSeeder extends Seeder
     {
         $companies = Company::get();
         foreach ($companies as $company) {
-                for ($i = 0; $i < rand(100,300); $i++) {
-                    $name = fake()->name();
+                for ($i = 0; $i < 100;  $i++) {
+                    $name = self::replaceName(fake()->name());
                     $email = self::generateEmail($name);
                     $verify = Employee::whereEmail($email)->exists();
                     if (!$verify) {
@@ -35,5 +35,9 @@ class EmployeeSeeder extends Seeder
         $name = iconv('UTF-8', 'ASCII//TRANSLIT', $name);
         $name =  preg_replace('/[^a-zA-Z0-9]/', '', strtolower(str_replace([' ', 'Dr.', 'Sr.', 'Srta.', 'Sra.'], '', $name)));
         return $name . '@' . Arr::random([fake()->freeEmailDomain()]);
+    }
+
+    private static function replaceName($name) {
+        return preg_replace('/^(Dr\.|Sr\.|Srta\.|Sra\.)\s*/', '', $name);
     }
 }

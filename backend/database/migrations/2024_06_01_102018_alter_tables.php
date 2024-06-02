@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    private $tables = ['departments', 'positions', 'employees', 'projects', 'tasks', 'support_tickets', 'users'];
+    private $tables = ['departments', 'positions', 'employees', 'projects', 'tasks', 'support_tickets', 'users','roles'];
     public function up(): void
     {
         foreach ($this->tables as $table) {

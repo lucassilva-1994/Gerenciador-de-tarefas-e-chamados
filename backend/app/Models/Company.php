@@ -29,4 +29,12 @@ class Company extends Model
     public function users():HasMany{
         return $this->hasMany(User::class);
     }
+
+    public function roles(): HasMany{
+        return $this->hasMany(Role::class);
+    }
+
+    public function permissions(): HasMany{
+        return $this->hasMany(Permission::class);
+    }
 }

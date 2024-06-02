@@ -1,0 +1,29 @@
+<app-layout [title]="title">
+    <form [formGroup]="form" class="d-flex justify-content-end">
+        <div class="input-group">
+            <input type="text" formControlName="name" class="form-control" placeholder="Insira o nome do grupo de usuários" />
+            <button type="submit" class="btn btn-primary">
+                <i ></i> Enviar
+            </button>
+        </div>
+    </form>
+    <div class="table-responsive mt-3"  style="max-height: 400px; overflow-y: auto;">
+        <table class="table table-striped text-nowrap">
+            <thead  class="table-dark">
+                <tr>
+                    <th>Nome</th>
+                    <th>Permissões</th>
+                    <th>Funcionários</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let role of roles">
+                    <td>{{ role.name }}</td>
+                    <td> {{ role.permissions.length }} </td>
+                    <td> {{ role.employees.length }} </td>
+                </tr>
+            </tbody>
+        </table>
+
+    </div>
+</app-layout>

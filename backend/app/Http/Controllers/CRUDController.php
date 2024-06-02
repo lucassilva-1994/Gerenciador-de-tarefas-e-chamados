@@ -27,6 +27,7 @@ class CRUDController extends Controller
 
     public function show(Request $request)
     {
+        //abort(403);
         $query = $this->model::query();
         if ($request->has('search')) {
             $search = $request->search;

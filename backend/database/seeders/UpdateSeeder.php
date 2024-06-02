@@ -3,7 +3,7 @@
 namespace Database\Seeders;
 
 use App\Helpers\HelperModel;
-use App\Models\{Company, Department, Employee, Position};
+use App\Models\{Company, Department, Employee, Position, Role};
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Arr;
 
@@ -31,6 +31,12 @@ class UpdateSeeder extends Seeder
                     'created_by' => Arr::random($company->employees->pluck('id')->toArray()),
                     'modified_by' => Arr::random($company->employees->pluck('id')->toArray()),
                 ], Employee::class,['id' => $employee->id]);
+            }
+            foreach($company->employees as $employee){
+                self::updateData([
+                    'created_by' => Arr::random($company->employees->pluck('id')->toArray()),
+                    'modified_by' => Arr::random($company->employees->pluck('id')->toArray()),
+                ], Role::class,['id' => $employee->id]);
             }
         }
     }

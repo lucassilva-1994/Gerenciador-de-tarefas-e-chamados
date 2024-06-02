@@ -20,7 +20,7 @@ class User extends Authenticatable implements JWTSubject
     }
 
     public function employee(): BelongsTo{
-        return $this->belongsTo(Employee::class)->select(['id','name','email']);
+        return $this->belongsTo(Employee::class);
     }
 
     public function position(): HasOneThrough{
@@ -48,6 +48,7 @@ class User extends Authenticatable implements JWTSubject
             'photo' => $this->photo,
             'position' => $this->position->name,
             'department' => $this->position->department ? $this->position->department->name : '',
+            'role' => $this->employee->roles->pluck('name')[0],
             'company' => $this->company->legal_name
         ];
     }

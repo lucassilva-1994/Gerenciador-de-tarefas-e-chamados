@@ -5,7 +5,7 @@ namespace App\Models;
 use App\Models\Scopes\{CompanyScope, NotDeletedScope};
 use Illuminate\Database\Eloquent\Attributes\ScopedBy;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\{BelongsTo,HasOne, HasOneThrough};
+use Illuminate\Database\Eloquent\Relations\{BelongsTo, BelongsToMany, HasOne, HasOneThrough};
 
 #[ScopedBy([NotDeletedScope::class, CompanyScope::class])]
 class Employee extends Model
@@ -27,6 +27,15 @@ class Employee extends Model
 
     public function position(): BelongsTo{
         return $this->belongsTo(Position::class)->select(['id','name']);
+    }
+
+
+    public function roles(): BelongsToMany{
+        return $this->belongsToMany(Role::class,'employee_role','employee_id','role_id');
+    }
+
+    public function abilities(){
+        return $this->roles->map->permissions->flatten()->pluck('name');
     }
 
     public function department(): HasOneThrough {
