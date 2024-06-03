@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\{DepartmentController, EmployeeController, PermissionController, PositionController, ProjectController, RoleController, SupportTicketController, TaskController, UserController};
+use App\Http\Controllers\{DepartmentController, EmployeeController, PermissionController, PermissionRoleController, PositionController, ProjectController, RoleController, SupportTicketController, TaskController, UserController};
 use App\Models\Position;
 use Illuminate\Support\Facades\Route;
 
@@ -60,7 +60,7 @@ Route::middleware('auth:api')->group(function() {
         Route::get('show-by-id/{id}', 'showById');
         Route::post('store', 'store')->can('create_role');
         Route::put('update/{id}', 'update')->can('update_role');
-        Route::delete('delete/{id}', 'delete')->can('delete_role');
+        Route::delete('delete/{id}', 'delete');
     });
     
     Route::controller(PermissionController::class)->prefix('permissions')->group(function() {
@@ -69,6 +69,11 @@ Route::middleware('auth:api')->group(function() {
         Route::post('store', 'store')->can('create_permission');
         Route::put('update/{id}', 'update')->can('update_permission');
         Route::delete('delete/{id}', 'delete')->can('delete_permission');
+    });
+
+    Route::controller(PermissionRoleController::class)->prefix('permissions_roles')->group(function() {
+        Route::post('store/{role_id}/{permission_id}', 'store');
+        Route::delete('delete/{role_id}/{permission_id}', 'delete');
     });
     
 

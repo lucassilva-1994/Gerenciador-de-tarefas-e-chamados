@@ -7,7 +7,7 @@ trait HelperMessage
         return response()->json(['message' => 'Operação realizada com sucesso.'], 200);
     }
 
-    private static function error() {
-        return response()->json(['message' => 'Falha ao realizar a operação.'], 400);
+    private static function error($message = 'Falha ao realizar a operação.') {
+        return response()->json(['message' => $message], 400);
     }
 }

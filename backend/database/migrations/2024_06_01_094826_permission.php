@@ -13,7 +13,8 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->integer('sequence');
             $table->string('name', 50);
-            $table->longText('description')->nullable();
+            $table->string('description', 60)->nullable();
+            $table->boolean('deleted')->default(0);
             $table->dateTime('created_at');
             $table->dateTime('updated_at')->nullable();
             $table->foreignUuid('company_id')->references('id')->on('companies')->cascadeOnDelete();

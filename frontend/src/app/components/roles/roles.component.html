@@ -1,29 +1,120 @@
 <app-layout [title]="title">
-    <form [formGroup]="form" class="d-flex justify-content-end">
-        <div class="input-group">
-            <input type="text" formControlName="name" class="form-control" placeholder="Insira o nome do grupo de usuários" />
-            <button type="submit" class="btn btn-primary">
-                <i ></i> Enviar
+    <form [formGroup]="form" (submit)="id ? update(id) : store()" class="row g-3 align-items-center">
+        <div class="col-md-4">
+            <input type="text" formControlName="name" class="form-control" placeholder="Nome do grupo de usuários" />
+        </div>
+        <div class="col-md-6">
+            <input type="text" formControlName="description" class="form-control"
+                placeholder="Descrição do grupo de usuários" />
+        </div>
+        <div class="col-md-2 d-flex justify-content-end">
+            <button type="submit" class="btn btn-primary w-100">
+                Enviar
             </button>
         </div>
     </form>
-    <div class="table-responsive mt-3"  style="max-height: 400px; overflow-y: auto;">
+
+    <div class="table-responsive mt-3" style="max-height: 400px; overflow-y: auto;">
         <table class="table table-striped text-nowrap">
-            <thead  class="table-dark">
+            <thead class="table-dark">
                 <tr>
-                    <th>Nome</th>
-                    <th>Permissões</th>
-                    <th>Funcionários</th>
+                    <th><i class="fas fa-user"></i> Nome</th>
+                    <th><i class="fas fa-file-alt"></i> Descrição</th>
+                    <th><i class="fas fa-key"></i> Permissões</th>
+                    <th><i class="fas fa-users"></i> Funcionários</th>
+                    <th><i class="fas fa-user-plus"></i> Criado por</th>
+                    <th><i class="fas fa-user-edit"></i> Alterado por</th>
+                    <th><i class="fas fa-cogs"></i> Ações</th>
                 </tr>
             </thead>
             <tbody>
                 <tr *ngFor="let role of roles">
-                    <td>{{ role.name }}</td>
+                    <td> {{ role.name }} </td>
+                    <td> {{ role.description }} </td>
                     <td> {{ role.permissions.length }} </td>
                     <td> {{ role.employees.length }} </td>
+                    <td> {{ role.created_by ? role.created_by.name : 'Sistema' }} </td>
+                    <td> {{ role.modified_by ? role.modified_by.name : 'Sem alteração' }} </td>
+                    <td>
+                        <span class="btn-group btn-group-sm">
+                            <button class="btn btn-warning" type="button" data-bs-toggle="modal" data-bs-target="#permissions" (click)="openModalPermissions(role)">
+                                <i class="fas fa-key"></i>
+                            </button>
+                            <button class="btn btn-info" type="button" data-bs-toggle="modal" data-bs-target="#employees" (click)="openModalEmployees(role)">
+                                <i class="fas fa-users"></i>
+                            </button>
+                            <a [routerLink]="['/roles', role.id]" class="btn btn-primary">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                            <button class="btn btn-danger" (click)="delete(role)">
+                                <i class="fas fa-trash-alt"></i>
+                            </button>
+                        </span>
+                    </td>
+                    
                 </tr>
             </tbody>
         </table>
+    </div>
+    <div class="modal fade" id="permissions" tabindex="-1" aria-hidden="true" style="display:none;">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5">{{ roleName }}</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form class="d-flex justify-content-end">
+                        <div class="input-group">
+                            <div *ngFor="let permission of permissions" class="form-check form-check-inline">
+                                <input type="checkbox" class="form-check-input" name="permission_checkbox"
+                                    [value]="permission.id" id="permission_checkbox_{{permission.id}}"
+                                    (change)="onCheckboxChange($event, roleId, permission.id)"
+                                    [checked]="permission.checked">
+                                <label class="form-check-label">
+                                    {{ permission.description }}
+                                </label>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary w-100" data-bs-dismiss="modal">Fechar</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
+    <div class="modal fade" id="employees" tabindex="-1" aria-hidden="true" style="display:none;">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5">{{ roleName }}</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="table-responsive mt-3" style="max-height: 400px; overflow-y: auto;">
+                        <table class="table table-striped text-nowrap">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th> Usuários desse grupo</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let employee of employees">
+                                    <td> {{ employee.name }} </td>
+                                </tr>
+                                <tr *ngIf="employees.length === 0">
+                                    <td>Nenhum usuário cadastrado nesse grupo.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary  w-100" data-bs-dismiss="modal">Fechar</button>
+                </div>
+            </div>
+        </div>
     </div>
 </app-layout>
