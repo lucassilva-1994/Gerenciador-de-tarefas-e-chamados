@@ -32,7 +32,9 @@ export class TokenInterceptor implements HttpInterceptor {
           this.router.navigate(['/']);
         } else if (error.status === 403) {
           this.router.navigate(['/access-denied']);
-        } 
+        } else if(error.status === 404){
+          this.router.navigate(['/not-found']);
+        }
         return throwError(error);
       })
     );

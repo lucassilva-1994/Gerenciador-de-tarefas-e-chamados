@@ -8,7 +8,8 @@ const routes: Routes = [
   { path: 'positions', loadChildren: () => import('./components/positions/positions.module').then(m => m.PositionsModule) }, 
   { path: 'employees', loadChildren: () => import('./components/employees/employees.module').then(m => m.EmployeesModule) },
   { path: 'access-denied', loadChildren: () => import('./components/access-denied/access-denied.module').then(m => m.AccessDeniedModule) },
-  { path: 'roles', loadChildren: () => import('./components/roles/roles.module').then(m => m.RolesModule) }
+  { path: 'roles', loadChildren: () => import('./components/roles/roles.module').then(m => m.RolesModule) },
+  { path: 'not-found', loadChildren: () => import('./components/not-found/not-found.module').then(m => m.NotFoundModule) }
 ];
 
 @NgModule({
