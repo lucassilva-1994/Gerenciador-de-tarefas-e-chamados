@@ -1,7 +1,12 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { FormBuilder, FormGroup } from '@angular/forms';
 import { Subject, debounceTime, finalize, switchMap, takeUntil, tap } from 'rxjs';
+import { Department } from 'src/app/models/Department';
 import { Employee } from 'src/app/models/Employee';
+import { Position } from 'src/app/models/Position';
+import { DepartmentService } from 'src/app/services/department.service';
 import { EmployeeService } from 'src/app/services/employee.service';
+import { PositionService } from 'src/app/services/position.service';
 
 @Component({
   templateUrl: './employees.component.html',
@@ -10,6 +15,8 @@ import { EmployeeService } from 'src/app/services/employee.service';
 export class EmployeesComponent implements OnInit, OnDestroy {
   title: string = 'Funcionários';
   employees: Employee[] = [];
+  positions: Position[] = [];
+  departments: Department[] = [];
   loading: boolean = true;
   perPage: number = 10;
   page: number = 1;
@@ -22,7 +29,14 @@ export class EmployeesComponent implements OnInit, OnDestroy {
   sortDirection: number = 1;
   private searchSubject: Subject<string> = new Subject();
   private destroy$ = new Subject<void>();
-  constructor(private employeeService: EmployeeService) { }
+  @ViewChild('employeeEditModal') employeeEditModal: ElementRef;
+  employee: Employee;
+  formEdit: FormGroup;
+  constructor(
+    private employeeService: EmployeeService, 
+    private positionService: PositionService,
+    private departmentService: DepartmentService,
+    private formBuilder: FormBuilder) { }
   ngOnInit(): void {
     this.show();
     this.searchSubject.pipe(
@@ -40,6 +54,13 @@ export class EmployeesComponent implements OnInit, OnDestroy {
       }),
       takeUntil(this.destroy$)
     ).subscribe(() => this.loading = false);
+    this.formEdit = this.formBuilder.group({
+      id:[''],
+      name: [''],
+      email: [''],
+      position_id: [''] ,
+      department: ['']
+    })
   }
 
   ngOnDestroy(): void {
@@ -60,8 +81,35 @@ export class EmployeesComponent implements OnInit, OnDestroy {
       if (this.page > this.pages) this.page = 1;
       this.loading = false;
     });
+    this.positionService.show(100)
+    .pipe(tap( response => {
+      this.positions = response.itens;
+    })).subscribe();
+
+    this.departmentService.show(100)
+    .pipe(tap( response => {
+      this.departments = response.itens;
+    })).subscribe();
   }
 
+  openModalEditEmployee(employee: Employee){
+    this.formEdit.patchValue({
+      id: employee.id,
+      name: employee.name,
+      email: employee.email,
+      position_id: employee.position.id,
+      department: employee.department.id
+    });
+  }
+  
+  updateEmployee(){
+    this.employeeService.update(this.formEdit.getRawValue() as Employee, this.formEdit.get('id')?.value)
+    .pipe(tap(response => {
+      this.employeeEditModal.nativeElement.style.display = 'none';
+      document.querySelector('.modal-backdrop')?.remove();
+      this.show();
+    })).subscribe();
+  }
 
   sortBy(columnName: string) {
     const sortOrder = (columnName === this.columnToSort) ? -this.sortDirection : 1;

@@ -8,6 +8,11 @@ class PositionController extends CRUDController
 {
     public function __construct()
     {
-        parent::__construct(Position::class,['department','employees','createdBy','modifiedBy'], PositionRequest::class);
+        parent::__construct(Position::class,[
+            'department','employees','createdBy','modifiedBy'
+        ],
+         PositionRequest::class,[
+            'department_id','name'
+         ]);
     }
 }

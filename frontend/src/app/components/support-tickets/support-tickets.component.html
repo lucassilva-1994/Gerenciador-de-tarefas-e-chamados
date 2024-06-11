@@ -1,0 +1,88 @@
+<app-layout [title]="title">
+    <form [formGroup]="form" class="row g-3" (submit)="store()">
+        <div class="col-sm-8">
+            <label for="title" class="form-label">
+                <i class="fas fa-heading"></i> Título:
+            </label>
+            <input type="text" id="title" formControlName="title" placeholder="Insira o Título" class="form-control" />
+        </div>
+        <div class="col-sm-4">
+            <label for="owner" class="form-label">
+                <i class="fas fa-user"></i> Responsável:
+            </label>
+            <select id="owner" class="form-select" formControlName="owner_id">
+                <option value="" disabled selected>Selecione uma opção</option>
+                <option *ngFor="let employee of employees" [value]="employee.id">{{ employee.name }}</option>
+            </select>
+        </div>
+        <div class="col-sm-12">
+            <label for="description" class="form-label">
+                <i class="fas fa-align-left"></i> Descrição:
+            </label>
+            <textarea id="description" formControlName="description" placeholder="Insira a descrição" class="form-control"></textarea>
+        </div>
+        <div class="col-sm-12">
+            <div class="row align-items-end">
+                <div class="col-sm-8">
+                    <label for="project" class="form-label">
+                        <i class="fas fa-project-diagram"></i> Projeto:
+                    </label>
+                    <div class="input-group">
+                        <select id="project" class="form-select" formControlName="project_id">
+                            <option value="" disabled selected>Selecione um projeto</option>
+                            <option *ngFor="let project of projects" [value]="project.id">{{ project.name }}</option>
+                        </select>
+                        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#projectModal">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="col-sm-4">
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="fas fa-save"></i> Enviar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+    
+
+    <div class="modal fade" id="projectModal" tabindex="-1" aria-hidden="true" #projectModal>
+        <div class="modal-dialog modal-md">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5">Adicionar projeto</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form [formGroup]="formProject" (submit)="storeProject()" class="row">
+                        <div class="col-sm-12 mb-3">
+                            <label for="name">
+                                <i class="fas fa-project-diagram"></i> Nome do projeto:
+                            </label>
+                            <input type="text" class="form-control" formControlName="name"
+                                placeholder="Nome do projeto" />
+                        </div>
+                        <div class="col-sm-12 mb-3">
+                            <label for="description">
+                                <i class="fas fa-align-left"></i> Descrição:
+                            </label>
+                            <textarea formControlName="description" placeholder="Insira a descrição"
+                                class="form-control"></textarea>
+                        </div>
+                        <div class="col-sm-12">
+                            <button type="submit" class="btn btn-primary  w-100">
+                                <i class="fas fa-save"></i> Salvar
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary w-100" data-bs-dismiss="modal">
+                        Fechar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</app-layout>

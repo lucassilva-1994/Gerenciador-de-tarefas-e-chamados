@@ -5,4 +5,5 @@ export class User extends Model{
     email: string;
     employee: Employee;
     company: string;
+    role: string;
 }

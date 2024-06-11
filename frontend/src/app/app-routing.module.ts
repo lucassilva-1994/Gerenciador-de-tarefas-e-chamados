@@ -9,7 +9,8 @@ const routes: Routes = [
   { path: 'employees', loadChildren: () => import('./components/employees/employees.module').then(m => m.EmployeesModule) },
   { path: 'access-denied', loadChildren: () => import('./components/access-denied/access-denied.module').then(m => m.AccessDeniedModule) },
   { path: 'roles', loadChildren: () => import('./components/roles/roles.module').then(m => m.RolesModule) },
-  { path: 'not-found', loadChildren: () => import('./components/not-found/not-found.module').then(m => m.NotFoundModule) }
+  { path: 'not-found', loadChildren: () => import('./components/not-found/not-found.module').then(m => m.NotFoundModule) },
+  { path: 'support-tickets', loadChildren: () => import('./components/support-tickets/support-tickets.module').then(m => m.SupportTicketsModule) }
 ];
 
 @NgModule({

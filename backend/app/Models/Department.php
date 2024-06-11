@@ -15,6 +15,7 @@ class Department extends Model
     protected $fillable = ['id','sequence','sequence', 'name','created_by','modified_by','deleted','created_at','updated_at','company_id'];
     public $incrementing = false;
     public $timestamps = false;
+    protected $hidden = ['sequence','created_at','updated_at','company_id','deleted'];
 
     public function positions(): HasMany{
         return $this->hasMany(Position::class);

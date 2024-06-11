@@ -26,7 +26,7 @@ class Employee extends Model
     }
 
     public function position(): BelongsTo{
-        return $this->belongsTo(Position::class)->select(['id','name']);
+        return $this->belongsTo(Position::class);
     }
 
 
@@ -39,7 +39,7 @@ class Employee extends Model
     }
 
     public function department(): HasOneThrough {
-        return $this->hasOneThrough(Department::class, Position::class, 'id', 'id', 'position_id', 'department_id')->select('departments.name');
+        return $this->hasOneThrough(Department::class, Position::class, 'id', 'id', 'position_id', 'department_id');
     }
     
 

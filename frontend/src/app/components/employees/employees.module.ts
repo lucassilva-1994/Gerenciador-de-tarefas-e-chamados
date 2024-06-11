@@ -5,7 +5,7 @@ import { EmployeesRoutingModule } from './employees-routing.module';
 import { EmployeesComponent } from './employees.component';
 import { SharedModule } from '../shared/shared.module';
 import { AgGridAngular } from 'ag-grid-angular';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -15,7 +15,7 @@ import { FormsModule } from '@angular/forms';
     CommonModule,
     EmployeesRoutingModule,
     SharedModule,
-    AgGridAngular,
+    ReactiveFormsModule,
     FormsModule
   ]
 })
