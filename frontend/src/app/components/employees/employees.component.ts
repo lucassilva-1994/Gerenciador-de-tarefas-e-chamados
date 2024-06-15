@@ -1,5 +1,5 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Subject, debounceTime, finalize, switchMap, takeUntil, tap } from 'rxjs';
 import { Department } from 'src/app/models/Department';
 import { Employee } from 'src/app/models/Employee';
@@ -56,9 +56,9 @@ export class EmployeesComponent implements OnInit, OnDestroy {
     ).subscribe(() => this.loading = false);
     this.formEdit = this.formBuilder.group({
       id:[''],
-      name: [''],
-      email: [''],
-      position_id: [''] ,
+      name: ['',[Validators.required, Validators.maxLength(100), Validators.minLength(3)]],
+      email: ['',[Validators.required, Validators.minLength(10), Validators.maxLength(100), Validators.email]],
+      position_id: ['', [Validators.required]],
       department: ['']
     })
   }

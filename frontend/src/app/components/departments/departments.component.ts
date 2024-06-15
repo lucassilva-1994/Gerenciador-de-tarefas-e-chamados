@@ -1,9 +1,9 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { Observable, Subject } from 'rxjs';
+import { Subject } from 'rxjs';
 import { Department } from 'src/app/models/Department';
 import { DepartmentService } from 'src/app/services/department.service';
 import { debounceTime, switchMap, take, takeUntil, tap } from 'rxjs/operators';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { PositionService } from 'src/app/services/position.service';
 import { Position } from 'src/app/models/Position';
@@ -42,11 +42,11 @@ export class DepartmentsComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.form = this.formBuilder.group({
-      name: ['']
+      name: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(40)]]
     })
     this.formPosition = this.formBuilder.group({
       department_id: [''],
-      name: ['']
+      name: ['',[Validators.required, Validators.minLength(3), Validators.maxLength(50)]]
     });
     this.router.params.subscribe(params => {
       if (params['id']) {

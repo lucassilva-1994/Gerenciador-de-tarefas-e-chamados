@@ -1,5 +1,5 @@
 import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { Subject, tap } from 'rxjs';
 import { Employee } from 'src/app/models/Employee';
@@ -32,14 +32,14 @@ export class SupportTicketsComponent implements OnInit, OnDestroy {
     this.projects = this.route.snapshot.data['projects'];
     this.employees = this.route.snapshot.data['employees'];
     this.form = this.formBuilder.group({
-      title: [''],
-      description: [''],
-      owner_id: [''],
+      title: ['', [Validators.required, Validators.maxLength(100)]],
+      description: ['', Validators.minLength(5)],
+      owner_id: ['',[Validators.required]],
       project_id: ['']
     });
     this.formProject = this.formBuilder.group({
-      name: [''],
-      description: ['']
+      name: ['',[Validators.required, Validators.minLength(3), Validators.maxLength(50)]],
+      description: ['', Validators.minLength(3)]
     });
     this.show();
   }

@@ -13,7 +13,7 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->integer('sequence');
             $table->string('title',100);
-            $table->longText('description');
+            $table->longText('description')->nullable();
             $table->enum('status',['OPEN','IN_PROGRESS','COMPLETED'])->default('OPEN');
             $table->boolean('deleted')->default(0);
             $table->dateTime('created_at');

@@ -5,21 +5,27 @@
                 <i class="fas fa-heading"></i> Título:
             </label>
             <input type="text" id="title" formControlName="title" placeholder="Insira o Título" class="form-control" />
+            <app-messages-validators [control]="form.controls['title']" field="titulo"></app-messages-validators>
         </div>
         <div class="col-sm-4">
             <label for="owner" class="form-label">
                 <i class="fas fa-user"></i> Responsável:
             </label>
             <select id="owner" class="form-select" formControlName="owner_id">
-                <option value="" disabled selected>Selecione uma opção</option>
+                <option value="" selected>Selecione uma opção</option>
                 <option *ngFor="let employee of employees" [value]="employee.id">{{ employee.name }}</option>
             </select>
+            <app-messages-validators [control]="form.controls['owner_id']"
+                field="responsável"></app-messages-validators>
         </div>
         <div class="col-sm-12">
             <label for="description" class="form-label">
                 <i class="fas fa-align-left"></i> Descrição:
             </label>
-            <textarea id="description" formControlName="description" placeholder="Insira a descrição" class="form-control"></textarea>
+            <textarea id="description" formControlName="description" placeholder="Insira a descrição"
+                class="form-control"></textarea>
+            <app-messages-validators [control]="form.controls['description']"
+                field="campo descrição"></app-messages-validators>
         </div>
         <div class="col-sm-12">
             <div class="row align-items-end">
@@ -32,20 +38,21 @@
                             <option value="" disabled selected>Selecione um projeto</option>
                             <option *ngFor="let project of projects" [value]="project.id">{{ project.name }}</option>
                         </select>
-                        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#projectModal">
+                        <button type="button" class="btn btn-success" data-bs-toggle="modal"
+                            data-bs-target="#projectModal">
                             <i class="fas fa-plus"></i>
                         </button>
                     </div>
                 </div>
                 <div class="col-sm-4">
-                    <button type="submit" class="btn btn-primary w-100">
+                    <button type="submit" class="btn btn-primary w-100" [disabled]="form.invalid">
                         <i class="fas fa-save"></i> Enviar
                     </button>
                 </div>
             </div>
         </div>
     </form>
-    
+
 
     <div class="modal fade" id="projectModal" tabindex="-1" aria-hidden="true" #projectModal>
         <div class="modal-dialog modal-md">
@@ -62,6 +69,8 @@
                             </label>
                             <input type="text" class="form-control" formControlName="name"
                                 placeholder="Nome do projeto" />
+                            <app-messages-validators [control]="formProject.controls['name']"
+                                field="nome do projeto"></app-messages-validators>
                         </div>
                         <div class="col-sm-12 mb-3">
                             <label for="description">
@@ -69,9 +78,11 @@
                             </label>
                             <textarea formControlName="description" placeholder="Insira a descrição"
                                 class="form-control"></textarea>
+                            <app-messages-validators [control]="formProject.controls['description']"
+                            field="campo descrição"></app-messages-validators>
                         </div>
                         <div class="col-sm-12">
-                            <button type="submit" class="btn btn-primary  w-100">
+                            <button type="submit" class="btn btn-primary  w-100" [disabled]="formProject.invalid">
                                 <i class="fas fa-save"></i> Salvar
                             </button>
                         </div>

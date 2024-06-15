@@ -3,16 +3,20 @@
         <div class="col-12 col-md-6">
             <form [formGroup]="form" (submit)="id ? update(id) : store()" class="d-flex justify-content-end">
                 <div class="input-group">
-                    <input type="text" formControlName="name" class="form-control" placeholder="Insira o nome do departamento" />
-                    <button type="submit" class="btn btn-primary">
+                    <input type="text" formControlName="name" class="form-control"
+                        placeholder="Insira o nome do departamento" />
+                    <button type="submit" class="btn btn-primary" [disabled]="form.invalid">
                         <i [ngClass]="id ? 'fas fa-sync' : 'fas fa-paper-plane'"></i> {{ id ? 'Atualizar' : 'Enviar' }}
                     </button>
                 </div>
             </form>
+            <app-messages-validators [control]="form.controls['name']" field="nome do departamento">
+            </app-messages-validators>
         </div>
         <div class="col-12 col-md-5 mt-3 mt-md-0">
             <div class="d-flex align-items-center">
-                <input type="search" [(ngModel)]="search" (keyup)="filter()" class="form-control me-3" placeholder="Digite sua busca aqui..." />
+                <input type="search" [(ngModel)]="search" (keyup)="filter()" class="form-control me-3"
+                    placeholder="Digite sua busca aqui..." />
             </div>
         </div>
         <div class="col-12 col-md-1 mt-3 mt-md-0">
@@ -23,9 +27,9 @@
             </div>
         </div>
     </div>
-    
+
     <app-spinner [loading]="loading"></app-spinner>
-    <div class="table-responsive mt-3 mb-3"  style="max-height: 400px; overflow-y: auto;">
+    <div class="table-responsive mt-3 mb-3" style="max-height: 400px; overflow-y: auto;">
         <table class="table table-striped text-nowrap">
             <thead class="table-dark">
                 <tr>
@@ -40,8 +44,10 @@
             <tbody>
                 <tr *ngFor="let department of departments">
                     <td> {{ department.name }}</td>
-                    <td (click)="openModalPositions(department)" data-bs-toggle="modal" data-bs-target="#positions"> {{ department.positions.length }} <i class="fas fa-eye" style="color: #0d2d4e;"></i></td>
-                    <td (click)="openModalEmployees(department)" data-bs-toggle="modal" data-bs-target="#employees"> {{ department.employees.length }} <i class="fas fa-eye" style="color: #0d2d4e;"></i></td>
+                    <td (click)="openModalPositions(department)" data-bs-toggle="modal" data-bs-target="#positions"> {{
+                        department.positions.length }} <i class="fas fa-eye" style="color: #0d2d4e;"></i></td>
+                    <td (click)="openModalEmployees(department)" data-bs-toggle="modal" data-bs-target="#employees"> {{
+                        department.employees.length }} <i class="fas fa-eye" style="color: #0d2d4e;"></i></td>
                     <td>{{ department.created_by ? department.created_by.name : 'Não informado' }}</td>
                     <td>{{ department.modified_by ? department.modified_by.name : 'Não alterado' }}</td>
                     <td>
@@ -80,10 +86,10 @@
                     </a>
                 </li>
                 <li class="page-item" *ngFor="let p of pageNumbers()" [class.active]="p === page">
-                    <a class="page-link" (click)="changePage(p)"  style="cursor: pointer;">{{ p }}</a>
+                    <a class="page-link" (click)="changePage(p)" style="cursor: pointer;">{{ p }}</a>
                 </li>
                 <li class="page-item" [class.disabled]="page === pages">
-                    <a class="page-link" (click)="changePage(page + 1)"  style="cursor: pointer;">
+                    <a class="page-link" (click)="changePage(page + 1)" style="cursor: pointer;">
                         <span>&raquo;</span>
                     </a>
                 </li>
@@ -91,7 +97,7 @@
         </nav>
     </div>
 
-    <div class="modal fade"  id="position" tabindex="-1" aria-hidden="true" #positionModal>
+    <div class="modal fade" id="position" tabindex="-1" aria-hidden="true" #positionModal>
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -99,24 +105,33 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form [formGroup]="formPosition" (submit)="storePosition()" class="d-flex justify-content-end">
-                        <div class="input-group">
-                            <input type="hidden" formControlName="department_id" />
-                            <input type="text" formControlName="name" class="form-control"
+                    <form [formGroup]="formPosition" (submit)="storePosition()" class="row">
+                        <input type="hidden" formControlName="department_id" />
+                        <div class="col-sm-12">
+                            <label for="position" class="form-label">
+                                <i class="fas fa-id-badge"></i> Cargo:
+                            </label>
+                            <input type="text" id="position" formControlName="name" class="form-control"
                                 placeholder="Insira o nome do cargo" />
-                            <button type="submit" class="btn btn-primary">Enviar</button>
+                        </div>
+                        <app-messages-validators [control]="formPosition.controls['name']" field="nome do cargo">
+                        </app-messages-validators>
+                        <div class="col-sm-12 mt-3">
+                            <button type="submit" class="btn btn-primary w-100" [disabled]="formPosition.invalid">
+                                <i class="fas fa-save"></i> Enviar
+                            </button>
                         </div>
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-secondary w-100" data-bs-dismiss="modal">Fechar</button>
                 </div>
             </div>
         </div>
     </div>
 
     <div class="modal fade" id="positions" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
+        <div class="modal-dialog modal-md">
             <div class="modal-content">
                 <div class="modal-header">
                     <h1 class="modal-title fs-5">{{ departmentName }}</h1>
@@ -149,7 +164,7 @@
     </div>
 
     <div class="modal fade" id="employees" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
+        <div class="modal-dialog modal-md">
             <div class="modal-content">
                 <div class="modal-header">
                     <h1 class="modal-title fs-5">{{ departmentName }}</h1>

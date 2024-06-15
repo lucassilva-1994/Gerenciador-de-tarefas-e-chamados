@@ -12,7 +12,7 @@ return new class extends Migration
         Schema::create($this->table, function(Blueprint $table){
             $table->uuid('id')->primary();
             $table->integer('sequence');
-            $table->string('name',100);
+            $table->string('name',50);
             $table->longText('description')->nullable();
             $table->boolean('deleted')->default(0);
             $table->dateTime('created_at');

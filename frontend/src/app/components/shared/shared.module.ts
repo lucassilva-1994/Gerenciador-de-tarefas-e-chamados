@@ -6,6 +6,7 @@ import { TableComponent } from './table/table.component';
 import { SpinnerComponent } from './spinner/spinner.component';
 import { SearchAndSelectQuantityComponent } from './search-and-select-quantity/search-and-select-quantity.component';
 import { MessageComponent } from "./message/message.component";
+import { MessagesValidatorsComponent } from './messages-validators/messages-validators.component';
 
 @NgModule({
     declarations: [
@@ -13,7 +14,8 @@ import { MessageComponent } from "./message/message.component";
         TableComponent,
         SpinnerComponent,
         SearchAndSelectQuantityComponent,
-        MessageComponent
+        MessageComponent,
+        MessagesValidatorsComponent
     ], 
     imports: [
         CommonModule,
@@ -24,7 +26,8 @@ import { MessageComponent } from "./message/message.component";
         TableComponent,
         SpinnerComponent,
         SearchAndSelectQuantityComponent,
-        MessageComponent
+        MessageComponent,
+        MessagesValidatorsComponent
     ]
 })
 export class SharedModule{}
