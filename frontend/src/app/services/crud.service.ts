@@ -1,6 +1,6 @@
 import { HttpClient, HttpParams } from "@angular/common/http";
 import { Inject, Injectable, InjectionToken } from "@angular/core";
-import { Observable, take } from "rxjs";
+import { Observable, map, take } from "rxjs";
 import { environment } from "src/environments/environment";
 export const RESOURCE_URL = new InjectionToken<string>('RESOURCE_URL');
 
@@ -19,6 +19,15 @@ export class CrudService<Model> {
             .set('search', search);
         return this.httpClient.get<{ pages: number, total: number, search: string, itens: Model[]}>(`${this.apiUrl}/show`, { params })
             .pipe(take(1));
+    }
+
+    showWithoutPagination(fields: string, relationships: string = ''): Observable<Model[]>{
+        let params = new HttpParams().set('fields', fields);
+        if(relationships.length !== 0){
+            params = params.append('relationships', relationships);
+        }
+        return this.httpClient.get<Model[]>(`${this.apiUrl}/show-without-pagination`, {params})
+        .pipe(take(1));
     }
 
     showById(id: string): Observable<Model> {

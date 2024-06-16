@@ -4,17 +4,17 @@
             <label for="title" class="form-label">
                 <i class="fas fa-heading"></i> Título:
             </label>
-            <input type="text" id="title" formControlName="title" placeholder="Insira o Título" class="form-control" />
+            <input type="text" id="title" formControlName="title" placeholder="Insira o título" class="form-control" />
             <app-messages-validators [control]="form.controls['title']" field="titulo"></app-messages-validators>
         </div>
         <div class="col-sm-4">
             <label for="owner" class="form-label">
                 <i class="fas fa-user"></i> Responsável:
             </label>
-            <select id="owner" class="form-select" formControlName="owner_id">
-                <option value="" selected>Selecione uma opção</option>
-                <option *ngFor="let employee of employees" [value]="employee.id">{{ employee.name }}</option>
-            </select>
+            <input id="owner" class="form-control" formControlName="owner_id" list="employeeList" [value]="getEmployeeName(form.value.owner_id)">
+            <datalist id="employeeList">
+              <option *ngFor="let employee of employees" [value]="employee.id">{{ employee.name }}</option>
+            </datalist>
             <app-messages-validators [control]="form.controls['owner_id']"
                 field="responsável"></app-messages-validators>
         </div>
@@ -79,7 +79,7 @@
                             <textarea formControlName="description" placeholder="Insira a descrição"
                                 class="form-control"></textarea>
                             <app-messages-validators [control]="formProject.controls['description']"
-                            field="campo descrição"></app-messages-validators>
+                                field="campo descrição"></app-messages-validators>
                         </div>
                         <div class="col-sm-12">
                             <button type="submit" class="btn btn-primary  w-100" [disabled]="formProject.invalid">

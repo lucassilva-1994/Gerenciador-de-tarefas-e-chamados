@@ -12,8 +12,6 @@ export class ProjectResolver implements Resolve<Project[]> {
   constructor(private projectService: ProjectService) {}
 
   resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Project[]> {
-    return this.projectService.show(100).pipe(
-      map(response => response.itens)
-    );
+    return this.projectService.showWithoutPagination('id,name,created_by','createdBy');
   }
 }

@@ -24,24 +24,33 @@ export class SupportTicketsComponent implements OnInit, OnDestroy {
   private destroy$ = new Subject<void>();
   constructor(
     private formBuilder: FormBuilder,
-    private employeeService: EmployeeService,
     private supportTicketService: SupportticketService,
     private projectService: ProjectService,
     private route: ActivatedRoute) { }
   ngOnInit(): void {
-    this.projects = this.route.snapshot.data['projects'];
     this.employees = this.route.snapshot.data['employees'];
+    this.projects = this.route.snapshot.data['projects'];
     this.form = this.formBuilder.group({
       title: ['', [Validators.required, Validators.maxLength(100)]],
-      description: ['', Validators.minLength(5)],
+      description: ['', Validators.minLength(10)],
       owner_id: ['',[Validators.required]],
       project_id: ['']
     });
     this.formProject = this.formBuilder.group({
       name: ['',[Validators.required, Validators.minLength(3), Validators.maxLength(50)]],
-      description: ['', Validators.minLength(3)]
+      description: ['', Validators.minLength(10)]
     });
-    this.show();
+  }
+
+  show(){
+    this.projectService.showWithoutPagination('id,name')
+    .pipe(tap(response => this.projects = response))
+    .subscribe();
+  }
+
+  getEmployeeName(id: string): string {
+    const selectedEmployee = this.employees.find(employee => employee.id === id);
+    return selectedEmployee ? selectedEmployee.name : '';
   }
 
   ngOnDestroy(): void {
@@ -49,25 +58,11 @@ export class SupportTicketsComponent implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  show() {
-    this.employeeService.show(100)
-      .pipe(
-        tap(response => {
-          this.employees = response.itens
-        })
-      ).subscribe();
-    this.projectService.show(100)
-    .pipe( tap(response => {
-      this.projects = response.itens
-    })).subscribe();
-  }
-
   store() {
     this.supportTicketService.store(this.form.getRawValue() as SupportTicket)
     .pipe(
       tap(response => {
         this.form.reset();
-        this.show();
         alert(response.message);
       })
     ).subscribe();
@@ -77,8 +72,8 @@ export class SupportTicketsComponent implements OnInit, OnDestroy {
     this.projectService.store(this.formProject.getRawValue() as Project)
     .pipe(tap(
        () => {
-        this.show();
         this.formProject.reset();
+        this.show();
         this.projectModal.nativeElement.style.display = 'none';
         document.querySelector('.modal-backdrop')?.remove();
       }

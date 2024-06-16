@@ -56,6 +56,13 @@ class CRUDController extends Controller
         ]);
     }
 
+    public function showWithoutPagination(Request $request){
+        $fields = $request->has('fields') ? explode(',', $request->fields) : ['*'];
+        $relationships = $request->has('relationships') ? explode(',', $request->relationships) : [];
+        return $this->model::select($fields)->with($relationships)->get();
+    }
+    
+
     public function showById(string $id)
     {
         return $this->model::findOrFail($id)->load($this->relationships);
