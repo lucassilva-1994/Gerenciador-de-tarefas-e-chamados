@@ -10,7 +10,8 @@ const routes: Routes = [
   { path: 'access-denied', loadChildren: () => import('./components/access-denied/access-denied.module').then(m => m.AccessDeniedModule) },
   { path: 'roles', loadChildren: () => import('./components/roles/roles.module').then(m => m.RolesModule) },
   { path: 'not-found', loadChildren: () => import('./components/not-found/not-found.module').then(m => m.NotFoundModule) },
-  { path: 'support-tickets', loadChildren: () => import('./components/support-tickets/support-tickets.module').then(m => m.SupportTicketsModule) }
+  { path: 'support-tickets', loadChildren: () => import('./components/support-tickets/support-tickets.module').then(m => m.SupportTicketsModule) },
+  { path: 'tasks', loadChildren: () => import('./components/tasks/tasks.module').then(m => m.TasksModule) }
 ];
 
 @NgModule({

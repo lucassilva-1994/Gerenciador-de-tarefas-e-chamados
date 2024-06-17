@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Permission } from 'src/app/models/Permission';
 import { Role } from 'src/app/models/Role';
 import { RoleService } from 'src/app/services/role.service';
@@ -30,8 +30,8 @@ export class RolesComponent implements OnInit {
   private router: ActivatedRoute) { }
   ngOnInit(): void {
     this.form = this.formBuilder.group({
-      name: [''],
-      description: ['']
+      name: ['', [Validators.required, Validators.minLength(10), Validators.maxLength(40)]],
+      description: ['', [Validators.minLength(3), Validators.maxLength(100)]]
     })
     this.router.params.subscribe(params => {
       if (params['id']) {
@@ -74,7 +74,6 @@ export class RolesComponent implements OnInit {
   }
 
   delete(role: Role){
-    console.log(role.id);
     if(confirm('Tem certeza que deseja excluir esse item?')){
       this.roleService.delete(role.id)
       .pipe(tap( response => {

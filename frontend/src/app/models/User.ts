@@ -6,4 +6,6 @@ export class User extends Model{
     employee: Employee;
     company: string;
     role: string;
+    visibility_level: string;
+    employee_id: string;
 }

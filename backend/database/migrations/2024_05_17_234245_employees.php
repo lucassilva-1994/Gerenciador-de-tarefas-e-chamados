@@ -14,6 +14,7 @@ return new class extends Migration
             $table->integer('sequence');
             $table->string('name', 100);
             $table->string('email', 100);
+            $table->enum('visibility_level',['GENERAL','RESTRICTED'])->default('RESTRICTED');
             $table->boolean('deleted')->default(0);
             $table->dateTime('created_at');
             $table->dateTime('updated_at')->nullable();

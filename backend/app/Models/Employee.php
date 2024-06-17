@@ -12,7 +12,7 @@ class Employee extends Model
 {
     protected $table = 'employees';
     protected $primaryKey = 'id';
-    protected $fillable = ['id','sequence','name','email','created_by','modified_by','deleted','created_at','updated_at','position_id','company_id'];
+    protected $fillable = ['id','sequence','name','email', 'visibility_level','created_by','modified_by','deleted','created_at','updated_at','position_id','company_id'];
     public $incrementing = false;
     public $timestamps = false;
     protected $hidden = ['position_id','company_id','updated_at'];

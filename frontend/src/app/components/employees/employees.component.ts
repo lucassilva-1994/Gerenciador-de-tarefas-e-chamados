@@ -104,7 +104,7 @@ export class EmployeesComponent implements OnInit, OnDestroy {
   
   updateEmployee(){
     this.employeeService.update(this.formEdit.getRawValue() as Employee, this.formEdit.get('id')?.value)
-    .pipe(tap(response => {
+    .pipe(tap(() => {
       this.employeeEditModal.nativeElement.style.display = 'none';
       document.querySelector('.modal-backdrop')?.remove();
       this.show();

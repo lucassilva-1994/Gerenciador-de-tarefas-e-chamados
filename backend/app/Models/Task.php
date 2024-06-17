@@ -4,7 +4,7 @@ namespace App\Models;
 
 use App\Models\Scopes\{CompanyScope, NotDeletedScope};
 use Illuminate\Database\Eloquent\Attributes\ScopedBy;
-use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\{Builder,Model};
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 #[ScopedBy([NotDeletedScope::class, CompanyScope::class])]
@@ -38,5 +38,14 @@ class Task extends Model
 
     public function modifiedBy(): BelongsTo{
         return $this->belongsTo(Employee::class,'modified_by','id');
+    }
+
+    protected static function booted(): void
+    {
+        static::addGlobalScope('taskScope', function (Builder $builder) {
+            if(auth()->user()->employee->visibility_level == 'RESTRICTED'){
+                $builder->where('owner_id', auth()->user()->employee_id);
+            }
+        });
     }
 }

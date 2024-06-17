@@ -16,6 +16,14 @@ class SupportTicket extends Model
     public $incrementing = false;
     public $timestamps = false;
 
+    public function setOwnerIdAttribute($value) {
+        if(auth()->user()->employee->visibility_level == 'RESTRICTED'){
+            $this->attributes['owner_id'] = null;
+        } else {
+            $this->attributes['owner_id'] = $value;
+        }
+    }
+
     public function project(): BelongsTo{
         return $this->belongsTo(Project::class,'project_id','id')->select(['id','name']);
     }
