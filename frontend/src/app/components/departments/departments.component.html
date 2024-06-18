@@ -1,4 +1,5 @@
 <app-layout [title]="title">
+
     <div class="row">
         <div class="col-12 col-md-6">
             <form [formGroup]="form" (submit)="id ? update(id) : store()" class="d-flex justify-content-end">
@@ -27,6 +28,7 @@
             </div>
         </div>
     </div>
+    <app-table [cols]="cols" [itens]="departments"></app-table>
 
     <app-spinner [loading]="loading"></app-spinner>
     <div class="table-responsive mt-3 mb-3" style="max-height: 400px; overflow-y: auto;">

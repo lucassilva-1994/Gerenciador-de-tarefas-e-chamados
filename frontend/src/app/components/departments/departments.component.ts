@@ -15,6 +15,14 @@ import { Employee } from 'src/app/models/Employee';
   styleUrls: ['./departments.component.css']
 })
 export class DepartmentsComponent implements OnInit, OnDestroy {
+  cols: { key: string, label: string, icon?:string}[] = [
+      { key: 'name', label:'Nome', icon: 'fas fa-user'},
+      { key: 'positions', label:'Cargos', icon: 'fas fa-briefcase'},
+      { key: 'employees', label:'Funcionários', icon: 'fas fa-users'},
+      { key: 'created_by', label:'Criado por', icon: 'fas fa-user'},
+      { key: 'modified_by', label:'Alterado por', icon: 'fas fa-user'},
+  ];
+
   departments: Department[] = [];
   employees: Employee[] = [];
   positions: Position[] = [];

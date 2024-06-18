@@ -1,0 +1,18 @@
+<div class="table-responsive mt-3 mb-3" style="max-height: 400px; overflow-y: auto;">
+    <table class="table table-striped text-nowrap">
+        <thead class="table-dark">
+            <tr>
+                <th *ngFor="let col of cols"> <i class="{{ col.icon }}" *ngIf="col.icon"></i> {{ col.label }}</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr *ngFor="let item of itens">
+                <td *ngFor="let col of cols">
+                    {{ (col.key === 'positions' || col.key === 'employees') ? item[col.key].length :
+                        (col.key === 'created_by' || col.key === 'modified_by') ? (item[col.key] ? item[col.key].name : 'Não informado') :
+                        item[col.key] }}
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
