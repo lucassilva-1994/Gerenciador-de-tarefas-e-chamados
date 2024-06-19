@@ -2,15 +2,27 @@
     <table class="table table-striped text-nowrap">
         <thead class="table-dark">
             <tr>
-                <th *ngFor="let col of cols"> <i class="{{ col.icon }}" *ngIf="col.icon"></i> {{ col.label }}</th>
+                <th *ngFor="let col of cols"> <i [ngClass]="col.icon" *ngIf="col.icon"></i> {{ col.label }}</th>
+                <th><i class="fas fa-cogs"></i> Ações</th>
             </tr>
         </thead>
         <tbody>
             <tr *ngFor="let item of itens">
                 <td *ngFor="let col of cols">
                     {{ (col.key === 'positions' || col.key === 'employees') ? item[col.key].length :
-                        (col.key === 'created_by' || col.key === 'modified_by') ? (item[col.key] ? item[col.key].name : 'Não informado') :
-                        item[col.key] }}
+                    (col.key === 'created_by' || col.key === 'modified_by') ? (item[col.key] ? item[col.key].name : 'Não
+                    informado') :
+                    item[col.key] }}
+                </td>
+                <td>
+                    <span class="btn-group btn-group-sm">
+                        <a [routerLink]="[path, item.id]" class="btn btn-primary" title="Editar registro">
+                            <i class="fas fa-edit"></i>
+                          </a>
+                        <button class="btn btn-danger" (click)="delete(item.id)" title="Excluir registro">
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </span>
                 </td>
             </tr>
         </tbody>

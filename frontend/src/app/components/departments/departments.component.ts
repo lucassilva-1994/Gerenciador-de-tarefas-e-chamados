@@ -122,16 +122,14 @@ export class DepartmentsComponent implements OnInit, OnDestroy {
       })).subscribe();
   }
 
-  delete(department: Department) {
-    if (confirm('Tem certeza que deseja excluir esse item?')) {
-      this.departmentService.delete(department.id)
+  delete(event: { id: string }) {
+      this.departmentService.delete(event.id)
         .pipe(
           tap(response => {
             this.show();
             alert(response.message);
           })
         ).subscribe();
-    }
   }
 
   openModal(department: Department) {
@@ -139,6 +137,14 @@ export class DepartmentsComponent implements OnInit, OnDestroy {
     this.formPosition.patchValue({
       department_id: department.id
     });
+  }
+
+  openModalComponent(event: { key: string, item: string|any }){
+    if (event.key === 'positions') {
+      this.openModalPositions(event.item);
+    } else if (event.key === 'employees') {
+      this.openModalEmployees(event.item);
+    }
   }
 
   openModalPositions(department: Department) {

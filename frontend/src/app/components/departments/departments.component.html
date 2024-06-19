@@ -28,7 +28,8 @@
             </div>
         </div>
     </div>
-    <app-table [cols]="cols" [itens]="departments"></app-table>
+    <app-table [cols]="cols" [itens]="departments" path="/departments"  (deleteEvent)="delete($event)">
+    </app-table>
 
     <app-spinner [loading]="loading"></app-spinner>
     <div class="table-responsive mt-3 mb-3" style="max-height: 400px; overflow-y: auto;">
