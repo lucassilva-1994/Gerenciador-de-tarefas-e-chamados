@@ -6,7 +6,6 @@ import { Employee } from 'src/app/models/Employee';
 import { Project } from 'src/app/models/Project';
 import { SupportTicket } from 'src/app/models/SupportTicket';
 import { User } from 'src/app/models/User';
-import { EmployeeService } from 'src/app/services/employee.service';
 import { ProjectService } from 'src/app/services/project.service';
 import { SupportticketService } from 'src/app/services/support_tickets.service';
 import { UserService } from 'src/app/services/user.service';
@@ -17,12 +16,22 @@ import { UserService } from 'src/app/services/user.service';
   styleUrls: ['./support-tickets.component.css']
 })
 export class SupportTicketsComponent implements OnInit, OnDestroy {
+  cols: { key: string, label: string, icon?: string }[] = [
+    { key: 'title', label: 'Titulo', icon: 'fas fa-tasks' },
+    { key: 'description', label: 'Descrição', icon: 'fas fa-align-left' },
+    { key: 'project', label: 'Projeto', icon: 'fas fa-project-diagram' },
+    { key: 'status', label: 'Status', icon: 'fas fa-clipboard-check' },
+    { key: 'owner', label: 'Responsável', icon: 'fas fa-user-tag' },
+    { key: 'created_by', label: 'Criado por', icon: 'fas fa-user-plus' },
+    { key: 'modified_by', label: 'Alterado por', icon: 'fas fa-user-edit' },
+  ];
   user$: Observable<User | null>;
   form: FormGroup;
   classColTitle: string = 'col-sm-8';
   formProject: FormGroup;
   employees: Employee[] = [];
   projects: Project[] = [];
+  supportTickets: SupportTicket[] = [];
   @ViewChild('projectModal') projectModal: ElementRef;
   private destroy$ = new Subject<void>();
   constructor(
@@ -34,7 +43,7 @@ export class SupportTicketsComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.user$ = this.userService.getUser().pipe(
       tap(user => {
-        if(user?.visibility_level == 'RESTRICTED'){
+        if (user?.visibility_level == 'RESTRICTED') {
           this.form.patchValue({
             owner_id: user.employee_id
           });
@@ -47,19 +56,24 @@ export class SupportTicketsComponent implements OnInit, OnDestroy {
     this.form = this.formBuilder.group({
       title: ['', [Validators.required, Validators.maxLength(100)]],
       description: ['', Validators.minLength(10)],
-      owner_id: ['',[Validators.required]],
+      owner_id: ['', [Validators.required]],
       project_id: ['']
     });
     this.formProject = this.formBuilder.group({
-      name: ['',[Validators.required, Validators.minLength(3), Validators.maxLength(50)]],
+      name: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(50)]],
       description: ['', Validators.minLength(10)]
     });
+    this.show();
   }
 
-  show(){
+  show() {
     this.projectService.showWithoutPagination('id,name')
-    .pipe(tap(response => this.projects = response))
-    .subscribe();
+      .pipe(tap(response => this.projects = response))
+      .subscribe();
+    this.supportTicketService.show().subscribe(response => {
+      this.supportTickets = response.itens
+      console.log(this.supportTickets);
+    });
   }
 
   getEmployeeName(id: string): string {
@@ -74,27 +88,32 @@ export class SupportTicketsComponent implements OnInit, OnDestroy {
 
   store() {
     this.supportTicketService.store(this.form.getRawValue() as SupportTicket)
-    .pipe(
-      tap(response => {
-        alert(response.message);
-        this.form.patchValue({
-          title: '',
-          description: '',
-          project_id: ''
+      .pipe(
+        tap(response => {
+          this.show();
+          alert(response.message);
+          this.form.patchValue({
+            title: '',
+            description: '',
+            project_id: ''
+          })
         })
-      })
-    ).subscribe();
+      ).subscribe();
   }
 
   storeProject() {
     this.projectService.store(this.formProject.getRawValue() as Project)
-    .pipe(tap(
-       () => {
-        this.formProject.reset();
-        this.show();
-        this.projectModal.nativeElement.style.display = 'none';
-        document.querySelector('.modal-backdrop')?.remove();
-      }
-    )).subscribe();
+      .pipe(tap(
+        () => {
+          this.formProject.reset();
+          this.show();
+          this.projectModal.nativeElement.style.display = 'none';
+          document.querySelector('.modal-backdrop')?.remove();
+        }
+      )).subscribe();
+  }
+
+  delete(event: {id: string}){
+    this.supportTicketService.delete(event.id).pipe(tap(() => this.show())).subscribe();
   }
 }

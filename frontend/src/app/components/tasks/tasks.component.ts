@@ -16,6 +16,15 @@ import { UserService } from 'src/app/services/user.service';
   styleUrls: ['./tasks.component.css']
 })
 export class TasksComponent implements OnInit, OnDestroy {
+  cols: { key: string, label: string, icon?: string }[] = [
+    { key: 'title', label: 'Titulo', icon: 'fas fa-tasks' },
+    { key: 'description', label: 'Descrição', icon: 'fas fa-align-left' },
+    { key: 'project', label: 'Projeto', icon: 'fas fa-project-diagram' },
+    { key: 'status', label: 'Status', icon: 'fas fa-clipboard-check' },
+    { key: 'owner', label: 'Responsável', icon: 'fas fa-user-tag' },
+    { key: 'created_by', label: 'Criado por', icon: 'fas fa-user-plus' },
+    { key: 'modified_by', label: 'Alterado por', icon: 'fas fa-user-edit' },
+  ];
   user$: Observable<User | null>;
   classColTitle: string = 'col-sm-8';
   form: FormGroup;
@@ -104,5 +113,9 @@ export class TasksComponent implements OnInit, OnDestroy {
           document.querySelector('.modal-backdrop')?.remove();
         }
       )).subscribe();
+  }
+
+  delete(event: {id: string}){
+    this.taskService.delete(event.id).pipe(tap(() => this.show())).subscribe
   }
 }

@@ -11,7 +11,7 @@
             <label for="owner" class="form-label">
                 <i class="fas fa-user"></i> Responsável:
             </label>
-            <input id="owner" class="form-control" formControlName="owner_id" list="employeeList" [value]="getEmployeeName(form.value.owner_id)">
+            <input id="owner" class="form-control" formControlName="owner_id" list="employeeList" autocomplete="off" [value]="getEmployeeName(form.value.owner_id)">
             <datalist id="employeeList">
                 <option *ngFor="let employee of employees" [value]="employee.id">{{ employee.name }}</option>
             </datalist>
@@ -53,30 +53,7 @@
         </div>
     </form>
 
-    <div class="table-responsive mt-3 mb-3" style="max-height: 400px; overflow-y: auto;">
-        <table class="table table-striped">
-            <thead class="table-dark">
-                <tr>
-                    <th><i class="fas fa-tasks"></i> Título</th>
-                    <th><i class="fas fa-align-left"></i> Descrição</th>
-                    <th><i class="fas fa-project-diagram"></i> Projeto</th>
-                    <th><i class="fas fa-clipboard-check"></i> Status</th>
-                    <th><i class="fas fa-user-tag"></i> Responsável</th>
-                    <th><i class="fas fa-user-edit"></i> Criado por</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr *ngFor="let task of tasks">
-                    <td>{{ task.title }}</td>
-                    <td>{{ task.description }}</td>
-                    <td>{{ task.project ? task.project.name : 'Não informado'}}</td>
-                    <td>{{ task.status | genericPipe}}</td>
-                    <td>{{ task.owner ? task.owner.name : 'Não informado'}}</td>
-                    <td>{{ task.created_by ? task.created_by.name : 'Sistema' }}</td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+    <app-table [cols]="cols" [itens]="tasks" path="/tasks" (deleteEvent)="delete($event)"></app-table>
     
 
     <div class="modal fade" id="projectModal" tabindex="-1" aria-hidden="true" #projectModal>

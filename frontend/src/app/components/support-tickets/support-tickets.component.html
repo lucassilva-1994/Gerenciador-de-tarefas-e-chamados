@@ -11,7 +11,7 @@
             <label for="owner" class="form-label">
                 <i class="fas fa-user"></i> Responsável:
             </label>
-            <input id="owner" class="form-control" formControlName="owner_id" list="employeeList" [value]="getEmployeeName(form.value.owner_id)">
+            <input id="owner" class="form-control" formControlName="owner_id" list="employeeList" autocomplete="off" [value]="getEmployeeName(form.value.owner_id)">
             <datalist id="employeeList">
                 <option *ngFor="let employee of employees" [value]="employee.id">{{ employee.name }}</option>
             </datalist>
@@ -52,6 +52,8 @@
             </div>
         </div>
     </form>
+
+    <app-table [itens]="supportTickets" [cols]="cols" path="/support-tickets" (deleteEvent)="delete($event)"></app-table>
 
 
     <div class="modal fade" id="projectModal" tabindex="-1" aria-hidden="true" #projectModal>

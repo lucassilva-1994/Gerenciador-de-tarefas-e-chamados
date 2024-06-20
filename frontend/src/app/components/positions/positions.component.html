@@ -1,2 +1,3 @@
 <app-layout [title]="title">
+    <app-table [cols]="cols" [itens]="positions" path="/positions" (deleteEvent)="delete($event)"></app-table>
 </app-layout>

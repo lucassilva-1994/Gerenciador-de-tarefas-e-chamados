@@ -33,7 +33,7 @@ class SupportTicket extends Model
     }
 
     public function owner(): BelongsTo{
-        return $this->belongsTo(Employee::class,'owner_id','id')->select(['id','name']);
+        return $this->belongsTo(Employee::class,'owner_id','id')->select(['id','name','email']);
     }
 
     public function createdBy():BelongsTo{
