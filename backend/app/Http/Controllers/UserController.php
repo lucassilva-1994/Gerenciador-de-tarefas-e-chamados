@@ -2,40 +2,46 @@
 
 namespace App\Http\Controllers;
 
-use App\Helpers\HelperModel;
 use App\Http\Requests\UserRequest;
 use App\Models\User;
-use Illuminate\Http\Request;
 
-class UserController extends Controller
+class UserController extends CRUDController
 {
-    use HelperModel;
-    public function signIn(Request $request){
-        $user = User::whereHas('employee', function($query) use ($request){
-            $query->where('email', $request->email);
-        })->first();
-        if(!$user->employee->deleted){
-            if(!$token = auth()->attempt(['employee_id' => $user->employee->id,'password' => $request->password])){
-                return response()->json(['Credenciais inválidas'],401);
-            }
-            return response()->json($token);
+    public function __construct()
+    {
+        parent::__construct(
+            User::class,
+            UserRequest::class,
+            ['department'],
+            ['name', 'username', 'email', 'department' => ['departments.name']]
+        );
+    }
+    
+    public function signIn(UserRequest $request)
+    {
+        $credentials = [
+            (filter_var($request->login, FILTER_VALIDATE_EMAIL) ? 'email' : 'username') => $request->login,
+            'password' => $request->password,
+            'deleted' => 0
+        ];
+        if (!auth()->attempt($credentials)) {
+            return response()->json([
+                'message' => 'Credenciais inválidas ou usuário inativo.'
+            ], 401);
         }
-        return response()->json("Usuário inativo");
+        return response()->json([
+            'token' => auth()->attempt($credentials)
+        ], 200);
     }
 
-    public function whoAmI(){
-        return auth()->user()->load(['company','employee','position','createdBy','modifiedBy']);
+    public function forgotPassword(UserRequest $request)
+    {
+        return response()->json([
+            'message' => $request->email
+        ]);
     }
 
-    public function show(){
-        return User::whereCompanyId(auth()->user()->company_id)->get();
-    }
-
-    public function showById(User $user){
-        return $user->company_id !== auth()->user()->company_id ? abort(403, 'Acesso negado') : $user->load(['company:id,legal_name','employee:id,name,email','position']);
-    }
-
-    public function store(UserRequest $request){
-        return self::setData($request->all(), User::class); 
+    public function signOut() {
+        auth()->logout(true);
     }
 }

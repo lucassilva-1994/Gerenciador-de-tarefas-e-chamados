@@ -2,40 +2,30 @@
 
 namespace Database\Seeders;
 
-use App\Helpers\HelperModel;
-use App\Models\{Company, Permission};
+use App\Models\{Permission, User};
+use App\Traits\ModelTrait;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Arr;
 
 class PermissionSeeder extends Seeder
 {
-    use HelperModel;
+    use ModelTrait;
     public function run(): void
     {
-        foreach(Company::get() as $company){
-            foreach(self::permissions() as $permission){
-                $permission['company_id'] = $company->id;
-                self::setData($permission,Permission::class, true);
-            }
+        foreach(self::permissions() as $permission){
+            $permission['created_by'] = Arr::random(User::pluck('id')->toArray());
+            $permission['modified_by'] = Arr::random(User::pluck('id')->toArray());
+            self::createRecord(Permission::class, $permission);
         }
     }
 
     private static function permissions() {
         return [
-            ['name' => 'create_employee', 'description' => 'Criar funcionário'],
-            ['name' => 'show_employees', 'description' => 'Listar funcionários'],
-            ['name' => 'delete_employee', 'description' => 'Excluir funcionário'],
-            ['name' => 'update_employee', 'description' => 'Atualizar funcionário'],
-    
             ['name' => 'create_department', 'description' => 'Criar departamento'],
             ['name' => 'show_departments', 'description' => 'Listar departamentos'],
             ['name' => 'delete_department', 'description' => 'Excluir departamento'],
             ['name' => 'update_department', 'description' => 'Atualizar departamento'],
-    
-            ['name' => 'create_position', 'description' => 'Criar cargo'],
-            ['name' => 'show_positions', 'description' => 'Listar cargos'],
-            ['name' => 'delete_position', 'description' => 'Excluir cargo'],
-            ['name' => 'update_position', 'description' => 'Atualizar cargo'],
-    
+            
             ['name' => 'create_project', 'description' => 'Criar projeto'],
             ['name' => 'show_projects', 'description' => 'Listar projetos'],
             ['name' => 'delete_project', 'description' => 'Excluir projeto'],
@@ -45,11 +35,7 @@ class PermissionSeeder extends Seeder
             ['name' => 'show_tasks', 'description' => 'Listar tarefas'],
             ['name' => 'delete_task', 'description' => 'Excluir tarefa'],
             ['name' => 'update_task', 'description' => 'Atualizar tarefa'],
-    
-            ['name' => 'create_support_ticket', 'description' => 'Criar chamado'],
-            ['name' => 'show_support_tickets', 'description' => 'Listar chamados'],
-            ['name' => 'delete_support_ticket', 'description' => 'Excluir chamado'],
-            ['name' => 'update_support_ticket', 'description' => 'Atualizar chamado'],
+
     
             ['name' => 'create_role', 'description' => 'Criar papel'],
             ['name' => 'show_roles', 'description' => 'Listar papéis'],
@@ -62,5 +48,4 @@ class PermissionSeeder extends Seeder
             ['name' => 'update_permission', 'description' => 'Atualizar permissão'],
         ];
     }
-    
 }

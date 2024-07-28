@@ -1,24 +1,24 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { Observable } from 'rxjs';
-import { User } from 'src/app/models/User';
-import { UserService } from 'src/app/services/user.service';
+import { NgIf } from '@angular/common';
+import { Component, inject, Input } from '@angular/core';
+import { RouterLink } from '@angular/router';
+import { User } from '../../../models/User';
+import { UserService } from '../../../services/user.service';
 
 @Component({
   selector: 'app-layout',
+  standalone: true,
+  imports: [RouterLink, NgIf],
   templateUrl: './layout.component.html',
-  styleUrls: ['./layout.component.css']
+  styleUrl: './layout.component.css'
 })
-export class LayoutComponent implements OnInit{
-  user$: Observable<User | null>;
-  @Input() title: string = '';
-  constructor(private userService: UserService, private router: Router) { }
-  ngOnInit(): void {
-    this.user$ = this.userService.getUser();
+export class LayoutComponent {  
+  user: User | null = null;
+  @Input() title: string;
+  private userService = inject(UserService);
+  constructor(){
+    this.user = this.userService.getUser()();
   }
-
-  logout() {
-    this.userService.logout();
-    this.router.navigate(['/']);
+  signOut(){
+    this.userService.signOut();
   }
 }

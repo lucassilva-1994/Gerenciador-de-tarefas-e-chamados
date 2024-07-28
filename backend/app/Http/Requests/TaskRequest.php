@@ -3,9 +3,11 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class TaskRequest extends FormRequest
 {
+
     public function authorize(): bool
     {
         return true;
@@ -14,8 +16,10 @@ class TaskRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'title' => ['required','min:3','max:100'],
-            'description' => ['nullable','min:3']
+            'title' => ['required','min:3','max:40'],
+            'description' => ['required','min:3','max:100'],
+            'is_done' => ['required'],
+            'owner_id' => Rule::requiredIf(auth()->user()->visibility == 1 || auth()->user()->visibility == 2)
         ];
     }
 }

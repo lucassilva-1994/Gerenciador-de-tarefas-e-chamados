@@ -3,20 +3,22 @@
 namespace App\Providers;
 
 use App\Models\User;
-use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Gate;
 
 class AppServiceProvider extends ServiceProvider
 {
+    /**
+     * Register any application services.
+     */
     public function register(): void
     {
-        
+        //
     }
     public function boot(): void
     {
-        Gate::before(function (User $user, $ability) {
-            if($user->employee->abilities()->contains($ability))
-                return true;
+        Gate::define('check-user', function (User $user) {
+            return $user->visibility === 1 || $user->visibility === 2;
         });
     }
 }

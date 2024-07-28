@@ -1,201 +1,36 @@
-<app-layout [title]="title">
-
-    <div class="row">
-        <div class="col-12 col-md-6">
-            <form [formGroup]="form" (submit)="id ? update(id) : store()" class="d-flex justify-content-end">
-                <div class="input-group">
-                    <input type="text" formControlName="name" class="form-control"
-                        placeholder="Insira o nome do departamento" />
-                    <button type="submit" class="btn btn-primary" [disabled]="form.invalid">
-                        <i [ngClass]="id ? 'fas fa-sync' : 'fas fa-paper-plane'"></i> {{ id ? 'Atualizar' : 'Enviar' }}
-                    </button>
-                </div>
-            </form>
-            <app-messages-validators [control]="form.controls['name']" field="nome do departamento">
-            </app-messages-validators>
-        </div>
-        <div class="col-12 col-md-5 mt-3 mt-md-0">
-            <div class="d-flex align-items-center">
-                <input type="search" [(ngModel)]="search" (keyup)="filter()" class="form-control me-3"
-                    placeholder="Digite sua busca aqui..." />
-            </div>
-        </div>
-        <div class="col-12 col-md-1 mt-3 mt-md-0">
-            <div class="d-flex align-items-center">
-                <select [(ngModel)]="perPage" (change)="onChangePerPage($event)" class="form-select">
-                    <option *ngFor="let option of options" [value]="option">{{ option }}</option>
-                </select>
-            </div>
-        </div>
-    </div>
-    <app-table [cols]="cols" [itens]="departments" path="/departments"  (deleteEvent)="delete($event)">
-    </app-table>
-
-    <app-spinner [loading]="loading"></app-spinner>
-    <div class="table-responsive mt-3 mb-3" style="max-height: 400px; overflow-y: auto;">
-        <table class="table table-striped text-nowrap">
-            <thead class="table-dark">
-                <tr>
-                    <th><i class="fas fa-user"></i> Nome</th>
-                    <th><i class="fas fa-briefcase"></i> Cargos</th>
-                    <th><i class="fas fa-users"></i> Funcionários</th>
-                    <th><i class="fas fa-user"></i> Criado por</th>
-                    <th><i class="fas fa-user"></i> Alterado por</th>
-                    <th><i class="fas fa-cogs"></i> Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr *ngFor="let department of departments">
-                    <td> {{ department.name }}</td>
-                    <td (click)="openModalPositions(department)" data-bs-toggle="modal" data-bs-target="#positions"> {{
-                        department.positions.length }} <i class="fas fa-eye" style="color: #0d2d4e;"></i></td>
-                    <td (click)="openModalEmployees(department)" data-bs-toggle="modal" data-bs-target="#employees"> {{
-                        department.employees.length }} <i class="fas fa-eye" style="color: #0d2d4e;"></i></td>
-                    <td>{{ department.created_by ? department.created_by.name : 'Não informado' }}</td>
-                    <td>{{ department.modified_by ? department.modified_by.name : 'Não alterado' }}</td>
-                    <td>
-                        <span class="btn-group btn-group-sm">
-                            <button class="btn btn-success" type="button" data-bs-toggle="modal"
-                                data-bs-target="#position" (click)="openModal(department)">
-                                <i class="fas fa-plus"></i>
-                            </button>
-                            <a [routerLink]="['/departments',department.id]" class="btn btn-primary">
-                                <i class="fas fa-edit"></i>
-                            </a>
-                            <button class="btn btn-danger" (click)="delete(department)">
-                                <i class="fas fa-trash-alt"></i>
-                            </button>
-                        </span>
-                    </td>
-                </tr>
-                <tr *ngIf="departments.length == 0">
-                    <td colspan="7" class="text-center">
-                        Nenhum registro encontrado
-                        <span *ngIf="search">para <strong>{{ search }}</strong></span>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-    <div class="d-flex justify-content-between align-items-center" *ngIf="pages != 0">
-        <div class="dataTables_info">
-            Página {{ page }} de {{ pages }}
-        </div>
-        <nav aria-label="Page navigation">
-            <ul class="pagination justify-content-end">
-                <li class="page-item" [class.disabled]="page === 1">
-                    <a class="page-link" (click)="changePage(page - 1)" style="cursor: pointer;">
-                        <span>&laquo;</span>
-                    </a>
-                </li>
-                <li class="page-item" *ngFor="let p of pageNumbers()" [class.active]="p === page">
-                    <a class="page-link" (click)="changePage(p)" style="cursor: pointer;">{{ p }}</a>
-                </li>
-                <li class="page-item" [class.disabled]="page === pages">
-                    <a class="page-link" (click)="changePage(page + 1)" style="cursor: pointer;">
-                        <span>&raquo;</span>
-                    </a>
-                </li>
-            </ul>
-        </nav>
-    </div>
-
-    <div class="modal fade" id="position" tabindex="-1" aria-hidden="true" #positionModal>
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5">{{ departmentName }}</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form [formGroup]="formPosition" (submit)="storePosition()" class="row">
-                        <input type="hidden" formControlName="department_id" />
-                        <div class="col-sm-12">
-                            <label for="position" class="form-label">
-                                <i class="fas fa-id-badge"></i> Cargo:
-                            </label>
-                            <input type="text" id="position" formControlName="name" class="form-control"
-                                placeholder="Insira o nome do cargo" />
-                        </div>
-                        <app-messages-validators [control]="formPosition.controls['name']" field="nome do cargo">
-                        </app-messages-validators>
-                        <div class="col-sm-12 mt-3">
-                            <button type="submit" class="btn btn-primary w-100" [disabled]="formPosition.invalid">
-                                <i class="fas fa-save"></i> Enviar
-                            </button>
-                        </div>
-                    </form>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary w-100" data-bs-dismiss="modal">Fechar</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal fade" id="positions" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-md">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5">{{ departmentName }}</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
-                        <table class="table table-striped table-hover">
-                            <thead class="table-dark">
-                                <tr>
-                                    <th scope="col">Cargos</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr *ngFor="let position of positions">
-                                    <td><i class="fas fa-briefcase"></i> {{ position.name }}</td>
-                                </tr>
-                                <tr *ngIf="positions.length === 0">
-                                    <td class="text-muted">Nenhum cargo cadastrado nesse departamento.</td>
-                                </tr>
-                            </tbody>
-                        </table>
+<app-layout title="Departamentos">
+    <app-message [message]="message"></app-message>
+    <app-loading [loading]="loading"></app-loading>
+    <app-card-form>
+        <form [formGroup]="form" (submit)="onSubmit()">
+            <div class="row align-items-end">
+                <div class="col-md-4 mb-3">
+                    <div class="form-group">
+                        <label for="name">
+                            <i class="fas fa-font"></i> Nome
+                        </label>
+                        <input id="name" formControlName="name" type="text" class="form-control" required
+                            placeholder="Nome">
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary w-100" data-bs-dismiss="modal">Fechar</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="modal fade" id="employees" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-md">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5">{{ departmentName }}</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
-                        <table class="table table-bordered table-hover">
-                            <thead class="table-dark">
-                                <tr>
-                                    <th scope="col">Funcionários</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr *ngFor="let employee of employees">
-                                    <td><i class="fas fa-user"></i> {{ employee.name }}</td>
-                                </tr>
-                                <tr *ngIf="employees.length === 0">
-                                    <td class="text-muted">Nenhum funcionário cadastrado nesse departamento.</td>
-                                </tr>
-                            </tbody>
-                        </table>
+                <div class="col-md-6  mb-3">
+                    <div class="form-group">
+                        <label for="description">
+                            <i class="fas fa-info-circle"></i> Descrição (Opcional)
+                        </label>
+                        <input id="description" formControlName="description" type="text" class="form-control"
+                            maxlength="100" placeholder="Descrição (Máximo 100 caracteres).">
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary w-100" data-bs-dismiss="modal">Fechar</button>
+                <div class="col-md-2  mb-3">
+                    <app-button-submit></app-button-submit>
                 </div>
             </div>
-        </div>
+        </form>
+        <app-messages-validators [backendErrors]="backendErrors"></app-messages-validators>
+    </app-card-form>
+    <div>
+        <app-table [itens]="departments" [cols]="cols" path="/departments" [pages]="pages"
+            (showEvent)="show($event)" (deleteEvent)="delete($event)"></app-table>
     </div>
 </app-layout>

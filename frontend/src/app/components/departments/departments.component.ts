@@ -1,202 +1,107 @@
-import { Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { Subject } from 'rxjs';
-import { Department } from 'src/app/models/Department';
-import { DepartmentService } from 'src/app/services/department.service';
-import { debounceTime, switchMap, take, takeUntil, tap } from 'rxjs/operators';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { PositionService } from 'src/app/services/position.service';
-import { Position } from 'src/app/models/Position';
-import { Employee } from 'src/app/models/Employee';
+import { LayoutComponent } from '../shared/layout/layout.component';
+import { CardFormComponent } from '../shared/card-form/card-form.component';
+import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
+import { ButtonSubmitComponent } from '../shared/button-submit/button-submit.component';
+import { DepartmentService } from '../../services/department.service';
+import { Department } from '../../models/Department';
+import { catchError, of, tap } from 'rxjs';
+import { NgFor, NgIf } from '@angular/common';
+import { TableComponent } from '../shared/table/table.component';
+import { HttpErrorResponse } from '@angular/common/http';
+import { MessageComponent } from './../shared/message/message.component';
+import { MessagesValidatorsComponent } from '../shared/messages-validators/messages-validators.component';
+import { LoadingComponent } from '../shared/loading/loading.component';
 
 @Component({
   selector: 'app-departments',
+  standalone: true,
+  imports: [
+    LayoutComponent, CardFormComponent, ReactiveFormsModule,
+    ButtonSubmitComponent, NgFor, TableComponent, NgIf, MessagesValidatorsComponent,
+    MessageComponent, LoadingComponent
+  ],
   templateUrl: './departments.component.html',
-  styleUrls: ['./departments.component.css']
+  styleUrl: './departments.component.css'
 })
-export class DepartmentsComponent implements OnInit, OnDestroy {
-  cols: { key: string, label: string, icon?:string}[] = [
-      { key: 'name', label:'Nome', icon: 'fas fa-user'},
-      { key: 'positions', label:'Cargos', icon: 'fas fa-briefcase'},
-      { key: 'employees', label:'Funcionários', icon: 'fas fa-users'},
-      { key: 'created_by', label:'Criado por', icon: 'fas fa-user'},
-      { key: 'modified_by', label:'Alterado por', icon: 'fas fa-user'},
+export class DepartmentsComponent implements OnInit {
+  cols: { key: string, label: string, icon?: string }[] = [
+    { key: 'name', label: 'Nome', icon: 'fas fa-tag' },
+    { key: 'description', label: 'Descrição', icon: 'fas fa-info-circle' },
+    { key: 'users_count', label: 'Usuários', icon: 'fas fa-user-circle' },
+    { key: 'created_by', label: 'Criado por', icon: 'fas fa-user-plus' },
+    { key: 'modified_by', label: 'Alterado por', icon: 'fas fa-user-edit' },
+    { key: 'created_at', label: 'Criado em', icon: 'fas fa-calendar-plus' },
+    { key: 'updated_at', label: 'Alterado em', icon: 'fas fa-calendar-check' },
   ];
-
+  mode: string;
   departments: Department[] = [];
-  employees: Employee[] = [];
-  positions: Position[] = [];
-  form: FormGroup;
-  title: string = 'Departamentos';
-  id: string;
-  departmentName: string;
-  formPosition: FormGroup;
-  loading: boolean = true;
-  perPage: number = 10;
-  page: number = 1;
+  private route = inject(ActivatedRoute);
+  private formBuilder = inject(FormBuilder);
+  private departmentService = inject(DepartmentService);
+  backendErrors: string[] = [];
   pages: number;
   total: number;
-  options: Number[] = [5, 10, 25, 50, 100];
-  search: string = '';
-  private searchSubject: Subject<string> = new Subject();
-  private destroy$ = new Subject<void>();
-  @ViewChild('positionModal') positionModal: ElementRef;
-  constructor(
-    private departmentService: DepartmentService,
-    private positionService: PositionService,
-    private formBuilder: FormBuilder,
-    private router: ActivatedRoute
-  ) { }
+  id: string;
+  form: FormGroup = this.formBuilder.group({
+    name: [''],
+    description: ['']
+  });
 
+  get message(): string {
+    return this.departmentService.getMessage()();
+  }
+
+  get loading(): boolean {
+    return this.departmentService.getLoading()();
+  }
   ngOnInit(): void {
-    this.form = this.formBuilder.group({
-      name: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(40)]]
-    })
-    this.formPosition = this.formBuilder.group({
-      department_id: [''],
-      name: ['',[Validators.required, Validators.minLength(3), Validators.maxLength(50)]]
-    });
-    this.router.params.subscribe(params => {
-      if (params['id']) {
-        this.departmentService.showById(params['id'])
-          .pipe(take(1))
-          .subscribe(response => {
-            this.id = params['id'];
-            this.form.patchValue(response);
-          })
+    this.mode = this.route.snapshot.data['mode'];
+    this.route.params.subscribe(params => {
+      this.id = params['id'];
+      if (this.mode === 'edit' && this.id) {
+        this.showById(this.id);
       }
     });
-    this.show();
-    this.searchSubject.pipe(
-      debounceTime(3000),
-      switchMap(search => this.departmentService.show(this.perPage, this.page, search)),
-      tap(response => {
+    this.show({ perPage: 10, page: 1, search: '' });
+  }
+  show(event: { perPage: number, page: number, search: string }) {
+    this.departmentService.show(event.perPage, event.page, event.search)
+      .pipe(tap(response => {
         this.departments = response.itens;
         this.pages = response.pages;
         this.total = response.total;
-        this.title = `Departamentos (${this.total})`;
-        if (this.page > this.pages) {
-          this.page = 1;
-          this.show();
-        }
-      }),
-      takeUntil(this.destroy$)
-    ).subscribe(() => this.loading = false);
-  }
-
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
-  }
-
-  show() {
-    this.departmentService.show(this.perPage, this.page, this.search).subscribe(response => {
-      this.departments = response.itens;
-      this.pages = response.pages;
-      this.total = response.total;
-      this.title = `Departamentos (${this.total})`;
-      if (this.page > this.pages) this.page = 1;
-      this.loading = false;
-    });
-  }
-
-  filter() {
-    this.searchSubject.next(this.search);
-  }
-
-  store() {
-    this.departmentService.store(this.form.getRawValue() as Department)
-      .pipe(tap(response => {
-        this.form.reset();
-        this.show();
-        alert(response.message);
       }))
       .subscribe();
   }
-
-  update(id: string) {
-    this.departmentService.update(this.form.getRawValue() as Department, id)
-      .pipe(tap(response => {
-        this.show();
-        alert(response.message);
-      })).subscribe();
+  showById(id: string) {
+    this.departmentService.showById(id).pipe(
+      tap(
+        response => {
+          this.form.patchValue(response);
+        }
+      )
+    ).subscribe();
   }
-
   delete(event: { id: string }) {
-      this.departmentService.delete(event.id)
-        .pipe(
-          tap(response => {
-            this.show();
-            alert(response.message);
-          })
-        ).subscribe();
-  }
-
-  openModal(department: Department) {
-    this.departmentName = department.name;
-    this.formPosition.patchValue({
-      department_id: department.id
-    });
-  }
-
-  openModalComponent(event: { key: string, item: string|any }){
-    if (event.key === 'positions') {
-      this.openModalPositions(event.item);
-    } else if (event.key === 'employees') {
-      this.openModalEmployees(event.item);
-    }
-  }
-
-  openModalPositions(department: Department) {
-    this.departmentName = department.name;
-    this.positions = department.positions;
-  }
-
-  openModalEmployees(department: Department) {
-    this.departmentName = department.name;
-    this.employees = department.employees;
-  }
-
-  storePosition() {
-    this.positionService.store(this.formPosition.getRawValue() as Position)
+    console.log(event.id);
+    this.departmentService.delete(event.id)
       .pipe(
         tap(() => {
-          this.formPosition.get('name')?.setValue('');
-          this.show();
-          this.positionModal.nativeElement.style.display = 'none';
-          document.querySelector('.modal-backdrop')?.remove();
+          this.show({ perPage: 10, page: 1, search: '' });
         })
-      ).subscribe()
+      ).subscribe();
   }
 
-  onChangePerPage(event: Event) {
-    const target = event.target as HTMLSelectElement;
-    this.perPage = parseInt(target.value, 10);
-    this.page = 1;
-    this.show();
-  }
-
-  changePage(page: number) {
-    if (page >= 1 && page <= this.pages) {
-      this.page = page;
-      this.show();
-    }
-  }
-
-  //Pegando a quantidade de páginas que vem do backend e transformando em um array iniciando em 1 e finalizando na quantidade informada pelo backend
-  pageNumbers(): number[] {
-    const pageNumbers: number[] = [];
-    const numLinksToShow = 5;
-    let startPage = Math.max(1, this.page - numLinksToShow);
-    let endPage = Math.min(this.pages, this.page + numLinksToShow);
-    if (this.page <= numLinksToShow) {
-      endPage = Math.min(numLinksToShow * 2 + 1, this.pages);
-    } else if (this.page >= this.pages - numLinksToShow) {
-      startPage = Math.max(this.pages - numLinksToShow * 2, 1);
-    }
-    for (let i = startPage; i <= endPage; i++) {
-      pageNumbers.push(i);
-    }
-    return pageNumbers;
+  onSubmit() {
+    const form = this.form.getRawValue() as Department;
+    const handleSuccess = () => { this.mode === 'new' || this.mode === 'view' ? this.form.reset() : null; this.show({ perPage: 10, page: 1, search: '' }); this.backendErrors = []; };
+    const handleErrors = (error: HttpErrorResponse) => {
+      this.backendErrors = Object.values(error.error.errors);
+      return of(null);
+    };
+    (this.mode === 'new' || this.mode === 'view' ? this.departmentService.store(form) : this.departmentService.update(form, this.id))
+      .pipe(tap(handleSuccess), catchError(handleErrors)).subscribe();
   }
 }

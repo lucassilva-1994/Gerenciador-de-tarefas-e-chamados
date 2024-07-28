@@ -1,121 +1,242 @@
-import { Component, ElementRef, OnInit, ViewChild, OnDestroy } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Component, inject, OnInit, signal } from '@angular/core';
+import { LayoutComponent } from '../shared/layout/layout.component';
+import { ButtonSubmitComponent } from '../shared/button-submit/button-submit.component';
+import { CardFormComponent } from '../shared/card-form/card-form.component';
 import { ActivatedRoute } from '@angular/router';
-import { Observable, Subject, tap } from 'rxjs';
-import { Employee } from 'src/app/models/Employee';
-import { Project } from 'src/app/models/Project';
-import { Task } from 'src/app/models/Task';
-import { User } from 'src/app/models/User';
-import { ProjectService } from 'src/app/services/project.service';
-import { TaskService } from 'src/app/services/task.service';
-import { UserService } from 'src/app/services/user.service';
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { Project } from '../../models/Project';
+import { User } from '../../models/User';
+import { NgClass, NgFor, NgIf } from '@angular/common';
+import { TaskService } from '../../services/task.service';
+import { HttpErrorResponse } from '@angular/common/http';
+import { catchError, of, tap } from 'rxjs';
+import { Task } from '../../models/Task';
+import { MessageComponent } from '../shared/message/message.component';
+import { LoadingComponent } from '../shared/loading/loading.component';
+import { TableComponent } from '../shared/table/table.component';
+import { UserService } from '../../services/user.service';
+import { MessagesValidatorsComponent } from '../shared/messages-validators/messages-validators.component';
+import { ProjectService } from '../../services/project.service';
+import { TaskComment } from '../../models/TaskComment';
+
+declare var window: any;
 
 @Component({
   selector: 'app-tasks',
+  standalone: true,
+  imports: [
+    ReactiveFormsModule, LayoutComponent, ButtonSubmitComponent, CardFormComponent,
+    NgFor, NgIf, MessageComponent, LoadingComponent, TableComponent, MessagesValidatorsComponent,
+    NgClass, FormsModule
+  ],
   templateUrl: './tasks.component.html',
-  styleUrls: ['./tasks.component.css']
+  styleUrl: './tasks.component.css'
 })
-export class TasksComponent implements OnInit, OnDestroy {
+export class TasksComponent implements OnInit {
   cols: { key: string, label: string, icon?: string }[] = [
-    { key: 'title', label: 'Titulo', icon: 'fas fa-tasks' },
-    { key: 'description', label: 'Descrição', icon: 'fas fa-align-left' },
-    { key: 'project', label: 'Projeto', icon: 'fas fa-project-diagram' },
-    { key: 'status', label: 'Status', icon: 'fas fa-clipboard-check' },
-    { key: 'owner', label: 'Responsável', icon: 'fas fa-user-tag' },
-    { key: 'created_by', label: 'Criado por', icon: 'fas fa-user-plus' },
-    { key: 'modified_by', label: 'Alterado por', icon: 'fas fa-user-edit' },
+    { key: 'title', label: 'Title', icon: 'fas fa-tag' },
+    { key: 'description', label: 'Descrição', icon: 'fas fa-info-circle' },
+    { key: 'owner', label: 'Responsável', icon: 'fas fa-user' },
+    { key: 'project', label: 'Projeto', icon: 'fas fa-user' },
+    { key: 'is_done', label: 'Status', icon: 'fas fa-tasks' },
+    { key: 'created_by', label: 'Criado por', icon: 'fas fa-user' },
+    { key: 'created_at', label: 'Criado em', icon: 'fas fa-calendar-plus' },
   ];
-  user$: Observable<User | null>;
-  classColTitle: string = 'col-sm-8';
-  form: FormGroup;
-  formProject: FormGroup;
-  employees: Employee[] = [];
+  mode?: string;
   projects: Project[] = [];
+  user: User | null = null;
+  users: User[] = [];
   tasks: Task[] = [];
-  @ViewChild('projectModal') projectModal: ElementRef;
-  private destroy$ = new Subject<void>();
-  constructor(
-    private formBuilder: FormBuilder,
-    private projectService: ProjectService,
-    private route: ActivatedRoute,
-    private taskService: TaskService,
-    private userService: UserService) { }
+  comments: TaskComment[] = [];
+  task: Task;
+  backendErrors: string[] = [];
+  backendProjectErrors: string[] = [];
+  pages: number;
+  total: number;
+
+  //Comments section
+  totalComments: number;
+  pagesComments: number;
+  perPageComments: number = 10;
+  pageCurrent: number =  1;
+
+  id: string;
+  modalProject: any;
+  private route = inject(ActivatedRoute);
+  private taskService = inject(TaskService);
+  private projectService = inject(ProjectService);
+  private userService = inject(UserService);
+  private formBuilder = inject(FormBuilder);
+  form: FormGroup = this.formBuilder.group({
+    title: [''],
+    description: [''],
+    is_done: [0],
+    project_id: [''],
+    owner_id: ['']
+  });
+
+  formProject: FormGroup = this.formBuilder.group({
+    name: [''],
+    description: ['']
+  });
+
+  get message(): string {
+    return this.taskService.getMessage()();
+  }
+
+  get loading(): boolean {
+    return this.taskService.getLoading()();
+  }
+
+  loadMoreComments() {
+    this.perPageComments += 10;
+    this.pageCurrent += 1;
+    this.showComments(this.perPageComments);
+  }
+
   ngOnInit(): void {
-    this.show();
-    this.user$ = this.userService.getUser().pipe(
-      tap(user => {
-        if (user?.visibility_level == 'RESTRICTED') {
-          this.form.patchValue({
-            owner_id: user.employee_id
-          });
-          this.classColTitle = 'col-sm-12';
-        }
-      })
-    );
-    this.employees = this.route.snapshot.data['employees'];
-    this.projects = this.route.snapshot.data['projects'];
-    this.form = this.formBuilder.group({
-      title: ['', [Validators.required, Validators.maxLength(100)]],
-      description: ['', Validators.minLength(10)],
-      owner_id: ['', [Validators.required]],
-      project_id: ['']
+    this.user = this.userService.getUser()();
+    this.mode = this.route.snapshot.data['mode'];
+    this.modalProject = new window.bootstrap.Modal(document.getElementById('projectModal'))
+    this.route.params.subscribe(params => {
+      this.id = params['id'];
+      if (this.mode === 'edit' && this.id) {
+        this.showById(this.id);
+        this.showComments(10);
+      }
     });
-    this.formProject = this.formBuilder.group({
-      name: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(50)]],
-      description: ['', Validators.minLength(10)]
-    });
+    this.show({ perPage: 10, page: 1, search: '' });
+    this.showProjects();
+    this.showUsers();
   }
-  ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
+  
+
+  formComment: FormGroup = this.formBuilder.group({
+    comment: [''],
+    task_id: []
+  })
+
+  currentTaskStatus: number | null = null;
+  updateTaskStatus(status: number | null): void {
+    this.currentTaskStatus = status;
+    this.show({ perPage: 10, page: 1, search: '' });
   }
 
-  show() {
-    this.projectService.showWithoutPagination('id,name')
-      .pipe(tap(response => this.projects = response))
-      .subscribe();
-
-    this.taskService.show()
+  show(event: { perPage: number, page: number, search: string }) {
+    this.taskService.show(event.perPage, event.page, event.search, this.currentTaskStatus)
       .pipe(tap(response => {
-        this.tasks = response.itens,
-        console.log(this.tasks)
+        this.tasks = response.itens;
+        this.pages = response.pages;
+        this.total = response.total;
       }))
       .subscribe();
   }
 
-  getEmployeeName(id: string): string {
-    const selectedEmployee = this.employees.find(employee => employee.id === id);
-    return selectedEmployee ? selectedEmployee.name : '';
+  showById(id: string) {
+    this.taskService.showById(id).pipe(
+      tap(
+        response => {
+          this.form.patchValue(response);
+          this.task = response;
+        }
+      )
+    ).subscribe();
   }
 
-  store() {
-    this.taskService.store(this.form.getRawValue() as Task)
+  delete(event: { id: string }) {
+    console.log(event.id);
+    this.taskService.delete(event.id)
       .pipe(
-        tap(response => {
-          alert(response.message);
-          this.show();
-          this.form.patchValue({
-            title: '',
-            description: '',
-            project_id: ''
-          })
+        tap(() => {
+          this.show({ perPage: 10, page: 1, search: '' });
         })
       ).subscribe();
   }
 
-  storeProject() {
-    this.projectService.store(this.formProject.getRawValue() as Project)
-      .pipe(tap(
-        () => {
-          this.formProject.reset();
-          this.show();
-          this.projectModal.nativeElement.style.display = 'none';
-          document.querySelector('.modal-backdrop')?.remove();
-        }
-      )).subscribe();
+  showComments(perPage: number) {
+    this.taskService.comments(this.id, perPage).subscribe(response => {
+      this.comments = response.itens,
+        this.totalComments = response.total,
+        this.pagesComments = response.pages
+    });
   }
 
-  delete(event: {id: string}){
-    this.taskService.delete(event.id).pipe(tap(() => this.show())).subscribe
+  showProjects() {
+    this.projects = this.route.snapshot.data['projects'];
+  }
+
+  showUsers() {
+    this.users = this.route.snapshot.data['users'];
+  }
+
+  getUserName(id: string): string | undefined {
+    const selectedUser = this.users.find(user => user.id === id);
+    return selectedUser ? selectedUser?.name : '';
+  }
+
+  onSubmit() {
+    const form = this.form.getRawValue() as Task;
+
+    const handleSuccess = () => {
+      if (this.mode === 'new' || this.mode === 'view') {
+        this.form.reset();
+      }
+
+      this.show({ perPage: 10, page: 1, search: '' });
+      this.backendErrors = [];
+
+      if (this.mode === 'edit' && this.id) {
+        this.showComments(this.perPageComments);
+        this.showById(this.id);
+      }
+    };
+
+    const handleErrors = (error: HttpErrorResponse) => {
+      this.backendErrors = Object.values(error.error.errors);
+      return of(null);
+    };
+
+    if (this.mode === 'new' || this.mode === 'view') {
+      this.taskService.store(form)
+        .pipe(tap(handleSuccess), catchError(handleErrors))
+        .subscribe();
+    } else if (this.mode === 'edit' && this.id) {
+      this.taskService.update(form, this.id)
+        .pipe(tap(handleSuccess), catchError(handleErrors))
+        .subscribe();
+    }
+  }
+
+
+  onSubmitProject() {
+    const form = this.formProject.getRawValue() as Project;
+    const handleSuccess = () => {
+      this.projectService.showWithoutPagination(['id', 'name']).subscribe(response => this.projects = response)
+      this.backendProjectErrors = [];
+      this.modalProject.hide();
+    };
+    const handleErrors = (error: HttpErrorResponse) => {
+      this.backendProjectErrors = Object.values(error.error.errors);
+      return of(null);
+    };
+    this.projectService.store(form)
+      .pipe(tap(handleSuccess), catchError(handleErrors)).subscribe();
+  }
+
+  onSubmitComment() {
+    this.formComment.patchValue({ task_id: this.task.id });
+    this.taskService.storeComment(this.formComment.getRawValue() as TaskComment)
+      .subscribe(response => {
+        this.showComments(this.perPageComments);
+        this.formComment.reset();
+      })
+  }
+
+  get showLoadMoreButton(): boolean {
+    return this.pageCurrent <= this.pagesComments;
+  }
+
+  openModalProject() {
+    this.modalProject.show();
   }
 }

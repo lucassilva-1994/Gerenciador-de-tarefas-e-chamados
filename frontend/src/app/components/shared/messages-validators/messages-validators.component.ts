@@ -1,18 +1,25 @@
+import { NgIf } from '@angular/common';
 import { Component, Input } from '@angular/core';
 import { AbstractControl, ValidationErrors } from '@angular/forms';
 
 @Component({
   selector: 'app-messages-validators',
+  standalone: true,
+  imports: [NgIf],
   templateUrl: './messages-validators.component.html',
-  styleUrls: ['./messages-validators.component.css']
+  styleUrl: './messages-validators.component.css'
 })
 export class MessagesValidatorsComponent {
   @Input() control: AbstractControl;
   @Input() field: string = 'O campo';
+  @Input() backendErrors: string[] = [];
 
   get errorMessage(): string | null{
       if(this.control && this.control.errors && this.control.touched){
         return this.getErrorMessage(this.control.errors);
+      }
+      if (this.backendErrors && this.backendErrors.length > 0) {
+        return this.backendErrors.map(error => `${error}`).join('<br>');
       }
       return null;
   }
@@ -21,7 +28,6 @@ export class MessagesValidatorsComponent {
     if(errors['required']){
       return `<i class="fas fa-exclamation-circle"></i> O <strong>${this.field}</strong> é obrigatório.`;
     }
-
     if(errors['email']){
       return '<i class="fas fa-exclamation-circle"></i> Informe um e-mail válido.';
     }

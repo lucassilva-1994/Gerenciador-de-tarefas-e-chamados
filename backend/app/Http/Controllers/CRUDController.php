@@ -2,37 +2,40 @@
 
 namespace App\Http\Controllers;
 
-use App\Helpers\HelperModel;
-use Illuminate\Http\Request;
+use App\Models\Scopes\VisibilityScope;
+use App\Models\User;
+use App\Traits\ModelTrait;
 
 class CRUDController extends Controller
 {
-    use HelperModel;
-    //O modelo que vai será usado nos métodos abaixo
+    use ModelTrait;
     private $model;
-    //A request que será referênciado abaixo
     private $request;
-    //Os relacionamentos da classe modelo que foi informado.
     private $relationships;
-    //Aqui são os campos que deseja que seja filtrado pelo filtro Search...
-    private $searchProperties;
+    private $fields;
+    private $withCount;
+    private $withSum;
 
-    public function __construct($model, $relationships, $request, $searchProperties = [])
+    public function __construct($model, $request, $relationships = [], $fields = [], $withCount = [], $withSum = [])
     {
         $this->model = $model;
-        $this->relationships = $relationships;
         $this->request = $request;
-        $this->searchProperties = $searchProperties;
+        $this->relationships = $relationships;
+        $this->fields = $fields;
+        $this->withCount = $withCount;
+        $this->withSum = $withSum;
     }
 
-    public function show(Request $request)
+    public function show()
     {
-        //abort(403);
         $query = $this->model::query();
-        if ($request->has('search')) {
-            $search = $request->search;
+        if (request()->has('is_done')) {
+            $query->where('is_done', (bool) request('is_done'));
+        }
+        if (request()->has('search')) {
+            $search = str_replace(',', '.', request('search'));
             $query->where(function ($query) use ($search) {
-                foreach ($this->searchProperties as $key => $value) {
+                foreach ($this->fields as $key => $value) {
                     if (is_array($value)) {
                         if (method_exists($this->model, $key)) {
                             $query->orWhereHas($key, function ($query) use ($search, $value) {
@@ -49,37 +52,70 @@ class CRUDController extends Controller
                 }
             });
         }
+        if (!empty($this->withCount)) {
+            $query->withCount($this->withCount);
+        }
+        if (!empty($this->withSum)) {
+            foreach ($this->withSum as $relation => $column) {
+                $query->withSum($relation, $column);
+            }
+        }
+        if ($this->model === User::class) {
+            $user = auth()->user();
+            if ($user->visibility === 2) {
+                $query->where('department_id', $user->department_id);
+            }
+            $query->where('deleted',0);
+        }
         return response()->json([
-            'pages' => ceil($query->paginate()->total() / $request->query('perPage', 15)),
+            'pages' => ceil($query->paginate()->total() / request('perPage', 15)),
             'total' => $query->paginate()->total(),
-            'itens' => $query->paginate($request->query('perPage', 15))->load($this->relationships)
+            'itens' => $query->with($this->relationships)->paginate(request('perPage', 15))->getCollection()
         ]);
     }
 
-    public function showWithoutPagination(Request $request){
-        $fields = $request->has('fields') ? explode(',', $request->fields) : ['*'];
-        $relationships = $request->has('relationships') ? explode(',', $request->relationships) : [];
-        return $this->model::select($fields)->with($relationships)->get();
+    public function showWithoutPagination()
+    {
+        $fields = request()->has('fields') ? explode(',', str_replace(["[", "]", "'", '"'], '', request('fields'))) : ['*'];
+        $relationships = request()->has('relationships') ? explode(',', request('relationships')) : [];
+        $query = $this->model::select($fields)->with($relationships);
+        if ($this->model === User::class) {
+            $user = auth()->user();
+            if ($user->visibility === 2) {
+                $query->where('department_id', $user->department_id);
+            }
+            $query->where('deleted',0);
+        }
+
+        if (request()->has('additional_filter')) {
+            $additionalFilter = request()->additional_filter;
+
+            foreach ($additionalFilter as $condition) {
+                $query->orWhere($condition[0], $condition[1], $condition[2]);
+            }
+        }
+
+        return $query->orderBy('name', 'asc')->get();
     }
-    
+
 
     public function showById(string $id)
     {
-        return $this->model::findOrFail($id)->load($this->relationships);
+        return $this->model::with($this->relationships)->withCount($this->withCount)->findOrFail($id);
     }
 
     public function store()
     {
-        return self::setData(app($this->request)->all(), $this->model);
+        return self::createRecord($this->model, app($this->request)->all());
     }
 
     public function update(string $id)
     {
-        return self::updateData(app($this->request)->all(), $this->model, ['id' => $id]);
+        return self::updateRecord($this->model, app($this->request)->all(), ['id' => $id]);
     }
 
     public function delete(string $id)
     {
-        return self::setStatusDeleted($this->model, ['id' => $id]);
+        return self::markAsDeleted($this->model, ['id' => $id]);
     }
 }

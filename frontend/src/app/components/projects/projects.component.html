@@ -1,1 +1,36 @@
-<p>projects works!</p>
+<app-layout title="Projetos">
+    <app-message [message]="message"></app-message>
+    <app-loading [loading]="loading"></app-loading>
+    <app-card-form>
+        <form [formGroup]="form" (submit)="onSubmit()">
+            <div class="row align-items-end">
+                <div class="col-md-4 mb-3">
+                    <div class="form-group">
+                        <label for="name">
+                            <i class="fas fa-font"></i> Nome
+                        </label>
+                        <input id="name" formControlName="name" type="text" class="form-control" required
+                            placeholder="Nome">
+                    </div>
+                </div>
+                <div class="col-md-6  mb-3">
+                    <div class="form-group">
+                        <label for="description">
+                            <i class="fas fa-info-circle"></i> Descrição (Opcional)
+                        </label>
+                        <input id="description" formControlName="description" type="text" class="form-control"
+                            maxlength="100" placeholder="Descrição (Máximo 100 caracteres).">
+                    </div>
+                </div>
+                <div class="col-md-2  mb-3">
+                    <app-button-submit></app-button-submit>
+                </div>
+            </div>
+        </form>
+        <app-messages-validators [backendErrors]="backendErrors"></app-messages-validators>
+    </app-card-form>
+    <div>
+        <app-table [itens]="projects" [cols]="cols" path="/projects" [pages]="pages"
+            (showEvent)="show($event)" (deleteEvent)="delete($event)"></app-table>
+    </div>
+</app-layout>

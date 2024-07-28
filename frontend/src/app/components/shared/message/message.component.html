@@ -1,3 +1,3 @@
-<div class="alert alert-success" *ngIf="showMessage">
+<div class="alert" [ngClass]="errorOccurred ? 'alert-danger' : 'alert-success'" *ngIf="message">
     {{ message }}
 </div>

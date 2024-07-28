@@ -1,13 +1,12 @@
-import { Employee } from "./Employee";
+import { User } from "./User";
 
-export class Model {
-    id: string;
-    name: string;
-    sequence: number;
-    created_by: Employee;
-    modified_by: Employee;
-    owner: Employee;
-    description: string;
-    created_at: Date;
-    updated_at: Date;
+export class Model{
+    id?:string;
+    sequence?: number;
+    name?: string;
+    description?: string;
+    created_by?: User;
+    modified_by?:User;
+    created_at?: Date 
+    updated_at?: Date 
 }

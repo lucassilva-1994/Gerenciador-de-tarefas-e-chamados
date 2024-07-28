@@ -1,16 +1,14 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { NgClass, NgIf } from '@angular/common';
+import { Component, Input } from '@angular/core';
 
 @Component({
   selector: 'app-message',
-  templateUrl: './message.component.html'
+  standalone: true,
+  imports: [NgIf, NgClass],
+  templateUrl: './message.component.html',
+  styleUrl: './message.component.css'
 })
-export class MessageComponent implements OnInit{
-    @Input() message: string;
-    @Input() showMessage: boolean = true;
-
-    ngOnInit(): void {
-      setTimeout(() => {
-        this.showMessage = false;
-      }, 3000);
-    }
+export class MessageComponent {
+  @Input() message: string | undefined;
+  @Input() errorOccurred: boolean = false;
 }

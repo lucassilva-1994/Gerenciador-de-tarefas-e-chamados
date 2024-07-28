@@ -2,12 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Permission;
+use Illuminate\Http\Request;
 
-class PermissionController extends CRUDController
+class PermissionController extends Controller
 {
-    public function __construct()
-    {
-        parent::__construct(Permission::class,['roles'],null,[]);
-    }
+    //
 }

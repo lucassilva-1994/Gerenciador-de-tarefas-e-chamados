@@ -3,7 +3,6 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 class DepartmentRequest extends FormRequest
 {
@@ -11,19 +10,11 @@ class DepartmentRequest extends FormRequest
     {
         return true;
     }
-
     public function rules(): array
     {
         return [
-            'name' => [
-                'required',
-                Rule::unique('departments')->where(
-                    function ($query) {
-                        return $query->where('company_id', $this->company_id);
-                    }
-                ),
-                'max:40','min:3'
-            ]
+            'name' => ['required','min:5','max:40'],
+            'description' => ['nullable','min:3','max:100']
         ];
     }
 }

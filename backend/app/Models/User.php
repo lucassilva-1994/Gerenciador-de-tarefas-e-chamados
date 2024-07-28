@@ -2,37 +2,30 @@
 
 namespace App\Models;
 
-use App\Models\Scopes\NotDeletedScope;
-use Illuminate\Database\Eloquent\Relations\{ BelongsTo, HasOneThrough};
+use Illuminate\Database\Eloquent\Relations\{BelongsTo, BelongsToMany, HasMany};
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
-
 class User extends Authenticatable implements JWTSubject
 {
     protected $table = 'users';
     protected $primaryKey = 'id';
-    protected $fillable = ['id','sequence','employee_id','password','created_by','modified_by','photo','created_at','updated_at','company_id'];
-    public $incrementing = false;
+    protected $keyType = 'string';
+    protected $fillable = ['id', 'sequence', 'name', 'username', 'password', 'email', 'deleted','photo', 'visibility','created_by','modified_by', 'created_at', 'updated_at', 'department_id','role_type'];
     public $timestamps = false;
+    public $incrementing = false;
+    protected $hidden = ['password'];
 
-    public function company(): BelongsTo{
-        return $this->belongsTo(Company::class)->select(['id','legal_name']);
+    public function department(): BelongsTo
+    {
+        return $this->belongsTo(Department::class)->select(['id','name','description']);
     }
 
-    public function employee(): BelongsTo{
-        return $this->belongsTo(Employee::class);
+    public function projects(): HasMany{
+        return $this->hasMany(Project::class);
     }
 
-    public function position(): HasOneThrough{
-        return $this->hasOneThrough(Position::class, Employee::class,'id','id','employee_id','position_id')->withoutGlobalScope(NotDeletedScope::class);
-    }
-    
-    public function createdBy():BelongsTo{
-        return $this->belongsTo(Employee::class,'created_by','id')->select(['id','name']);
-    }
-
-    public function modifiedBy(): BelongsTo{
-        return $this->belongsTo(Employee::class,'modified_by','id')->select(['id','name']);
+    public function roles(): BelongsToMany{
+        return $this->belongsToMany(Role::class,'role_user','user_id','role_id');
     }
 
     public function getJWTIdentifier()
@@ -40,18 +33,15 @@ class User extends Authenticatable implements JWTSubject
         return $this->getKey();
     }
 
-    public function getJWTCustomClaims()
-    {
+    public function getJWTCustomClaims() {
         return [
-            'employee_id' => $this->employee->id,
-            'name' => $this->employee->name,
-            'email' => $this->employee->email,
-            'visibility_level'  => $this->employee->visibility_level,
-            'photo' => $this->photo,
-            'position' => $this->position->name,
-            'department' => $this->position->department ? $this->position->department->name : '',
-            'role' => $this->employee->roles->pluck('name')[0],
-            'company' => $this->company->legal_name
+            'name' => $this->name,
+            'username' => $this->username,
+            'email' => $this->email,
+            'department' => $this->department->name ?? 'Departamento inativo',
+            'username' => $this->username,
+            'visibility' => $this->visibility,
+            'visibility_name' => $this->visibility == 1 ? 'Administrador' : ($this->visibility == 2 ? 'Gerente' : 'Operacional')
         ];
     }
 }

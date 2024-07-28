@@ -2,34 +2,30 @@
 
 namespace App\Models;
 
-use App\Models\Scopes\{CompanyScope,NotDeletedScope};
+use App\Models\Scopes\NotDeletedScope;
 use Illuminate\Database\Eloquent\Attributes\ScopedBy;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\{BelongsTo, HasMany, HasManyThrough, HasOneThrough};
+use Illuminate\Database\Eloquent\Relations\{BelongsTo, HasMany};
 
-#[ScopedBy([NotDeletedScope::class, CompanyScope::class])]
+#[ScopedBy([NotDeletedScope::class])]
 class Department extends Model
 {
     protected $table = 'departments';
     protected $primaryKey = 'id';
-    protected $fillable = ['id','sequence','sequence', 'name','created_by','modified_by','deleted','created_at','updated_at','company_id'];
-    public $incrementing = false;
+    protected $keyType = 'string';
+    protected $fillable = ['id','sequence','name','description','created_by','modified_by','deleted','created_at','updated_at'];
     public $timestamps = false;
-    protected $hidden = ['sequence','created_at','updated_at','company_id','deleted'];
+    public $incrementing = false;
 
-    public function positions(): HasMany{
-        return $this->hasMany(Position::class);
-    }
-
-    public function employees(): HasManyThrough {
-        return $this->hasManyThrough(Employee::class, Position::class, 'department_id', 'position_id')->select(['employees.name']);;
+    public function users(): HasMany{
+        return $this->hasMany(User::class);
     }
 
     public function createdBy():BelongsTo{
-        return $this->belongsTo(Employee::class,'created_by','id')->select(['id','name']);
+        return $this->belongsTo(User::class,'created_by','id')->select(['id','name']);
     }
 
-    public function modifiedBy(): BelongsTo{
-        return $this->belongsTo(Employee::class,'modified_by','id')->select(['id','name']);
+    public function modifiedBy():BelongsTo{
+        return $this->belongsTo(User::class,'modified_by','id')->select(['id','name']);
     }
 }

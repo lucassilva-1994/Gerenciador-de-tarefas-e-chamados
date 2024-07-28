@@ -1,35 +1,23 @@
 <?php
 
 namespace App\Models;
-
-use App\Models\Scopes\{CompanyScope, NotDeletedScope};
-use Illuminate\Database\Eloquent\Attributes\ScopedBy;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\{BelongsTo, BelongsToMany};
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
-#[ScopedBy([NotDeletedScope::class, CompanyScope::class])]
 class Role extends Model
 {
     protected $table = 'roles';
     protected $primaryKey = 'id';
-    protected $fillable = ['id','sequence','name','description', 'created_at', 'updated_at','created_by','modified_by','company_id'];
-    public $incrementing = false;
+    protected $keyType = 'string';
+    protected $fillable = ['id','sequence','name','description','created_by','modified_by','deleted','created_at','updated_at'];
     public $timestamps = false;
-    protected $hidden = ['sequence','created_at','updated_at','company_id','deleted'];
+    public $incrementing = false;
 
-    public function employees(): BelongsToMany{
-        return $this->belongsToMany(Employee::class,'employee_role');
+    public function users(): BelongsToMany{
+        return $this->belongsToMany(User::class,'role_user','role_id','user_id');
     }
 
     public function permissions(): BelongsToMany{
-        return $this->belongsToMany(Permission::class,'permission_role')->select(['id','name','description']);
-    }
-
-    public function createdBy():BelongsTo{
-        return $this->belongsTo(Employee::class,'created_by','id');
-    }
-
-    public function modifiedBy(): BelongsTo{
-        return $this->belongsTo(Employee::class,'modified_by','id');
+        return $this->belongsToMany(Permission::class,'permission_role','role_id','permission_id');
     }
 }

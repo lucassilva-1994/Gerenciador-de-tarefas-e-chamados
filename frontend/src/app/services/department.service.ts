@@ -1,11 +1,11 @@
-import { HttpClient } from "@angular/common/http";
-import { Injectable } from "@angular/core";
 import { Department } from "../models/Department";
-import { CrudService } from "./crud.service";
+import { CRUDService } from "./crud.service";
+import { HttpClient } from '@angular/common/http';
+import { Injectable } from '@angular/core';
 
-@Injectable({ providedIn : 'root'})
-export class DepartmentService extends CrudService<Department>{
-    constructor(httpClient: HttpClient) {
-        super(httpClient, 'departments');
+@Injectable({ providedIn: 'root'})
+export class DepartmentService extends CRUDService<Department>{
+    constructor(httpClient: HttpClient){
+        super(httpClient,'departments');
     }
 }

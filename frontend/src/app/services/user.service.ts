@@ -1,69 +1,73 @@
-import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { environment } from 'src/environments/environment';
-import { HttpClient } from '@angular/common/http';
-import { TokenService } from './token.service';
+import { HttpClient } from "@angular/common/http";
+import { inject, Injectable, signal } from "@angular/core";
+import { Router } from "@angular/router";
+import { Observable, tap } from "rxjs";
+import { User } from "../models/User";
+import { CRUDService } from "./crud.service";
 import jwt_decode from "jwt-decode";
-import { User } from '../models/User';
-
-const apiUrl = environment.apiUrl + 'users';
+import { environment } from "../../environments/environment";
+interface LoginResponse {
+    token?: string;
+    message?: string;
+}
+const apiUrl = environment.apiUrl+'users';
 @Injectable({ providedIn: 'root' })
-export class UserService {
-    private userSubject = new BehaviorSubject<User | null>(null);
-    constructor(private httpClient: HttpClient, private tokenService: TokenService) {
-        this.tokenService.hasToken() && this.decode();
-    }
+export class UserService extends CRUDService<User> {
+    private route = inject(Router);
+    private user = signal<User | null>(null);
 
-    setToken(token: string) {
-        this.tokenService.setToken(token);
+    constructor(httpClient: HttpClient) {
+        super(httpClient, 'users');
         this.decode();
     }
 
-    getUser(): Observable<User | null> {
-        return this.userSubject.asObservable();
+    getUser() {
+        return this.user;
+    }
+
+    setToken(token: string) {
+        localStorage.setItem('token', token);
+        this.decode();
     }
 
     private decode() {
-        const token = this.tokenService.getToken();
+        const token = localStorage.getItem('token');
 
         if (token) {
             const user = jwt_decode(token) as User;
-            this.userSubject.next(user);
+            this.user.set(user);
         } else {
             console.error('Token não encontrado ou é nulo.');
         }
     }
 
-    logout(){
-        this.tokenService.removeToken();
-        this.userSubject.next(null);
-    } 
-    
-    isLogged(){
-        return this.tokenService.hasToken();
+    signIn(login: { login: string, password: string }): Observable<LoginResponse> {
+        return this.httpClient.post<LoginResponse>(`${apiUrl}/sign-in`, login)
+            .pipe(tap(response => {
+                if (response.token) {
+                    this.setToken(response.token);
+                }
+                this.route.navigate(['/tasks'])
+            })
+            );
+    }
+    signOut(): void {
+        this.httpClient.get<{ message: string }>(`${apiUrl}/sign-out`)
+            .pipe(
+                tap(
+                    () => {
+                        localStorage.removeItem('token');
+                        this.user.set(null);
+                        this.route.navigate(['/']);
+                    }
+                )
+            ).subscribe();
     }
 
-    show(): Observable<User[]> {
-        return this.httpClient.get<User[]>(apiUrl + '/show');
-    }
-
-    showById(id: string): Observable<User>{
-        return this.httpClient.get<User>(apiUrl + `/show-by-id/${id}`);
-    }
-
-    store(user: User){
-        return this.httpClient.post(apiUrl+'/store', user);
-    }
-
-    update(id: string, user: User){
-        return this.httpClient.put(`${apiUrl}/update/${id}`, user);
-    }
-
-    delete(id: string){
-        return this.httpClient.delete(apiUrl+`/delete/${id}`);
-    }
-
-    changePassword(user: User){
-        return this.httpClient.put(`${apiUrl}/change-password`, user);
+    forgotPassword(email: string): Observable<{ message: string }> {
+        return this.httpClient.post<{ message: string }>(`${apiUrl}/forgot-password`, { email })
+            .pipe(tap(response => {
+                console.log(response);
+            }));
     }
 }

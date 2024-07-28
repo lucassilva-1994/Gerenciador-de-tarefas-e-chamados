@@ -1,25 +1,14 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use App\Http\Requests\DepartmentRequest;
 use App\Models\Department;
-use Illuminate\Support\Facades\Gate;
 
 class DepartmentController extends CRUDController
 {
     public function __construct()
     {
-        parent::__construct(
-            Department::class,
-            ['positions','employees','createdBy','modifiedBy'], 
-            DepartmentRequest::class,
-            [
-                'name',
-                'positions' => ['positions.name'],
-                'employees' => ['employees.name'],
-                'createdBy' => ['name'],
-                'modifiedBy' => ['name']
-            ]
-        );
+        parent::__construct(Department::class,DepartmentRequest::class,['createdBy','modifiedBy'],['name','description'],['users']);
     }
 }
