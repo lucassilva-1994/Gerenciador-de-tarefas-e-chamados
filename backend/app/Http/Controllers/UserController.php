@@ -12,7 +12,7 @@ class UserController extends CRUDController
         parent::__construct(
             User::class,
             UserRequest::class,
-            ['department'],
+            ['department','createdBy','modifiedBy'],
             ['name', 'username', 'email', 'department' => ['departments.name']]
         );
     }
@@ -26,9 +26,12 @@ class UserController extends CRUDController
         ];
         if (!auth()->attempt($credentials)) {
             return response()->json([
-                'message' => 'Credenciais inválidas ou usuário inativo.'
+                'errors' => [
+                    'credentials' => 'Credenciais inválidas ou usuário inativo.'
+                ]
             ], 401);
         }
+        
         return response()->json([
             'token' => auth()->attempt($credentials)
         ], 200);
@@ -39,6 +42,10 @@ class UserController extends CRUDController
         return response()->json([
             'message' => $request->email
         ]);
+    }
+
+    public function changePassword(UserRequest $request){
+        return self::updateRecord(User::class, $request->only('password'),['id' => $request->id]);
     }
 
     public function signOut() {

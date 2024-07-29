@@ -64,7 +64,7 @@
                 <div class="col-md-3 mb-3" *ngIf="mode == 'new'">
                     <div class="form-group">
                         <label for="password">
-                            <i class="fas fa-user"></i> Senha
+                            <i class="fas fa-key"></i> Senha
                         </label>
                         <input id="password" formControlName="password" type="password" class="form-control"
                             maxlength="100" placeholder="Senha de acesso">
@@ -73,7 +73,7 @@
                 <div class="col-md-3 mb-3" *ngIf="mode == 'new'">
                     <div class="form-group">
                         <label for="password_confirmation">
-                            <i class="fas fa-user"></i> Confirmação de senha
+                            <i class="fas fa-lock-open"></i> Confirmação de senha
                         </label>
                         <input id="password_confirmation" formControlName="password_confirmation" type="password"
                             class="form-control" maxlength="100" placeholder="Confirmar senha">
@@ -87,7 +87,7 @@
         <app-messages-validators [backendErrors]="backendErrors"></app-messages-validators>
     </app-card-form>
     <app-table [itens]="users" [cols]="cols" path="/users" [pages]="pages" (showEvent)="show($event)"
-        (deleteEvent)="delete($event)"></app-table>
+        (deleteEvent)="delete($event)"  [actions]="actions"></app-table>
 </app-layout>
 
 <div class="modal" id="departmentModal">
@@ -118,6 +118,72 @@
                         </div>
                     </div>
                     <app-messages-validators [backendErrors]="backendDepartmentErrors"></app-messages-validators>
+                    <app-button-submit></app-button-submit>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal" id="changePasswordModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title fs-5">Alterar senha</div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form [formGroup]="formChangePassword" (submit)="changePassword()">
+                    <div class="mb-3">
+                        <div class="form-group">
+                            <label for="name">
+                                <i class="fas fa-id-badge"></i> Nome
+                            </label>
+                            <input type="text" class="form-control" 
+                                required readonly disabled value="{{ user?.name }}"/>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="form-group">
+                            <label for="name">
+                                <i class="fas fa-user"></i> Usuário 
+                            </label>
+                            <input type="text" class="form-control" 
+                                required readonly disabled value="{{ user?.username }}"/>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="form-group">
+                            <label for="name">
+                                <i class="fas fa-envelope"></i> Email
+                            </label>
+                            <input type="text" class="form-control" 
+                                required readonly disabled value="{{ user?.email }}"/>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="form-group">
+                            <label for="password">
+                                <i class="fas fa-key"></i> Senha
+                            </label>
+                            <input id="password" formControlName="password" [type]="showPassword ? 'text' : 'password'" class="form-control"
+                                maxlength="100" placeholder="Senha">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="form-group">
+                            <label for="password_confirmation">
+                                <i class="fas fa-lock-open"></i> Confirmação de senha
+                            </label>
+                            <input id="password_confirmation" formControlName="password_confirmation" [type]="showPassword ? 'text' : 'password'"
+                                class="form-control" maxlength="100" placeholder="Confirmação de senha">
+                        </div>
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" (change)="toggleShowPassword()">
+                        <label class="form-check-label" for="showPassword">Mostrar senha</label>
+                    </div>
+                    <app-messages-validators [backendErrors]="backendPasswordErrors"></app-messages-validators>
                     <app-button-submit></app-button-submit>
                 </form>
             </div>

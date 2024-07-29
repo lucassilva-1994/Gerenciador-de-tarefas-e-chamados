@@ -3,18 +3,21 @@ import { Component, inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { UserService } from '../../services/user.service';
-import { Login } from '../../models/Login';
+import { HttpErrorResponse } from '@angular/common/http';
+import { catchError, of } from 'rxjs';
+import { MessagesValidatorsComponent } from '../shared/messages-validators/messages-validators.component';
 
 @Component({
   selector: 'app-auth',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, MessagesValidatorsComponent],
   templateUrl: './auth.component.html',
   styleUrl: './auth.component.css'
 })
 export class AuthComponent implements OnInit {
   mode?: string;
   titleCard?: string;
+  backendErrors: string[] = [];
   showPassword = false;
   formBuilder = inject(FormBuilder);
   route = inject(ActivatedRoute);
@@ -37,7 +40,8 @@ export class AuthComponent implements OnInit {
   }
 
   signIn(): void {
-    this.userService.signIn(this.signInForm.getRawValue()).subscribe();
+    const handleErrors = (error: HttpErrorResponse) => { this.backendErrors = Object.values(error.error.errors); return of(null);};
+    this.userService.signIn(this.signInForm.getRawValue()).pipe(catchError(handleErrors)).subscribe();
   }
 
   forgotPassword() {

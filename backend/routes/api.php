@@ -15,6 +15,7 @@ Route::middleware('auth:api')->group(function(){
         Route::post('store','store')->can('check-user');
         Route::put('update/{id}','update')->can('check-user');
         Route::delete('delete/{id}','delete')->can('check-user');
+        Route::put('change-password','changePassword');
         Route::get('sign-out','signOut');
     });
 

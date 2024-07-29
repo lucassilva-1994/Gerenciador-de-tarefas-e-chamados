@@ -1,7 +1,7 @@
 import { User } from "./User";
 
 export class Model{
-    id?:string;
+    id:string;
     sequence?: number;
     name?: string;
     description?: string;

@@ -137,7 +137,7 @@
         </div>
     </div>
     <app-table [itens]="tasks" [cols]="cols" path="/tasks" [pages]="pages" (showEvent)="show($event)"
-        (deleteEvent)="delete($event)"></app-table>
+        (deleteEvent)="delete($event)" [actions]="actions"></app-table>
 </app-layout>
 
 <div class="modal" id="projectModal">

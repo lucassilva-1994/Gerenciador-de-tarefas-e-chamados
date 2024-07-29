@@ -1,7 +1,7 @@
 import { HttpClient } from "@angular/common/http";
 import { inject, Injectable, signal } from "@angular/core";
 import { Router } from "@angular/router";
-import { Observable, tap } from "rxjs";
+import { Observable, take, tap } from "rxjs";
 import { User } from "../models/User";
 import { CRUDService } from "./crud.service";
 import jwt_decode from "jwt-decode";
@@ -10,7 +10,7 @@ interface LoginResponse {
     token?: string;
     message?: string;
 }
-const apiUrl = environment.apiUrl+'users';
+const apiUrl = environment.apiUrl + 'users';
 @Injectable({ providedIn: 'root' })
 export class UserService extends CRUDService<User> {
     private route = inject(Router);
@@ -62,6 +62,16 @@ export class UserService extends CRUDService<User> {
                     }
                 )
             ).subscribe();
+    }
+
+    changePassword(user: User): Observable<{ message: string }> {
+        return this.httpClient.put<{ message: string }>(`${apiUrl}/change-password`, user)
+            .pipe(
+                take(1),
+                tap(response => {
+                    alert(response.message);
+                })
+            );
     }
 
     forgotPassword(email: string): Observable<{ message: string }> {

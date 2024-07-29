@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import {  DatePipe, NgIf, NgFor, NgClass } from '@angular/common';
+import { DatePipe, NgIf, NgFor, NgClass } from '@angular/common';
 import { Subject, Subscription, debounceTime, distinctUntilChanged } from 'rxjs';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { GenericPipe } from './../../../pipes/generic.pipe';
@@ -14,10 +14,13 @@ import { GenericPipe } from './../../../pipes/generic.pipe';
   imports: [NgIf, RouterLink, ReactiveFormsModule, FormsModule, NgFor, NgClass]
 })
 
-export class TableComponent implements OnInit, OnDestroy {
+export class TableComponent<Model> implements OnInit, OnDestroy {
   @Input() cols: { key: string, label: string, icon?: string }[] = [];
   @Input() itens: any[] = [];
   @Input() path: string = '';
+  @Input() actions: { label: string, icon: string, class: string, title?: string, callback: (item: Model) => void }[] = [];
+
+
   id: string = '';
   mode: string;
   @Output() deleteEvent = new EventEmitter<{ id: string }>();
@@ -67,6 +70,10 @@ export class TableComponent implements OnInit, OnDestroy {
     if (confirm('Tem certeza que deseja excluir esse item?')) {
       this.deleteEvent.emit({ id });
     }
+  }
+
+  onAction(action: { label: string, icon: string, class: string, title?: string, callback: (item: Model) => void }, item: Model) {
+    action.callback(item);
   }
 
   itemValue(item: any, key: string): any {

@@ -42,6 +42,16 @@ export class TasksComponent implements OnInit {
     { key: 'created_by', label: 'Criado por', icon: 'fas fa-user' },
     { key: 'created_at', label: 'Criado em', icon: 'fas fa-calendar-plus' },
   ];
+  
+  actions = [
+    {
+      label: '',
+      icon: 'fa fa-refresh',
+      class:'btn btn-outline-primary',
+      title:'Alterar status',
+      callback: (item: Task) => this.changeIsDone(item)
+    }
+  ];
   mode?: string;
   projects: Project[] = [];
   user: User | null = null;
@@ -234,6 +244,17 @@ export class TasksComponent implements OnInit {
 
   get showLoadMoreButton(): boolean {
     return this.pageCurrent <= this.pagesComments;
+  }
+
+  changeIsDone(task: Task) {
+    task.is_done = task.is_done === 0 ? 1 : 0;
+    const is_done = {
+      is_done: task.is_done,
+      title: task.title,
+      description: task.description,
+      owner_id: task.owner_id
+    }
+    this.taskService.update(is_done as Task, task.id).subscribe();
   }
 
   openModalProject() {

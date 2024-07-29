@@ -38,6 +38,10 @@ class UserRequest extends FormRequest
                 'password' => ['required','min:8','confirmed'],
                 'department_id' => Rule::requiredIf(auth()->user()->visibility == 1)
             ];
+        } elseif($this->path() === 'api/users/change-password'){
+            return [
+                'password' => ['required','min:8','confirmed']
+            ];
         }
         return [];
     }

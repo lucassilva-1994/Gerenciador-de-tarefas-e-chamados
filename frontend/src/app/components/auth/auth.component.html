@@ -27,36 +27,14 @@
                             <input type="checkbox" class="form-check-input" (change)="toggleShowPassword()">
                             <label class="form-check-label" for="showPassword">Mostrar senha</label>
                         </div>
+                        <app-messages-validators [backendErrors]="backendErrors"></app-messages-validators>
                         <div class="d-grid">
                             <button type="submit" class="btn btn-primary">
                                 <i class="fas fa-sign-in-alt"></i> Entrar
                             </button>
                         </div>
-                        <!-- <div class="text-center">
-                            <a routerLink="forgot-password" class="btn btn-link link-primary">Recuperar senha</a>
-                        </div> -->
                     </form>
                 </div>
-                <!-- <div class="card-body" *ngIf="mode == 'forgot-password'">
-                    <form [formGroup]="forgotPasswordForm" (submit)="forgotPassword()">
-                        <div class="mb-3">
-                            <label for="email" class="form-label">Email:</label>
-                            <div class="input-group">
-                                <span class="input-group-text"><i class="fas fa-envelope"></i></span>
-                                <input type="email" class="form-control" placeholder="Entrar com seu email" required
-                                    formControlName="email">
-                            </div>
-                        </div>
-                        <div class="d-grid">
-                            <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-key"></i> Recuperar Senha
-                            </button>
-                        </div>
-                        <div class="text-center">
-                            <a routerLink="/" class="btn btn-link link-primary">Entrar</a> 
-                        </div>
-                    </form>
-                </div> -->
             </div>
         </div>
     </div>

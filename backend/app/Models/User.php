@@ -15,6 +15,14 @@ class User extends Authenticatable implements JWTSubject
     public $incrementing = false;
     protected $hidden = ['password'];
 
+    public function createdBy():BelongsTo{
+        return $this->belongsTo(self::class,'created_by','id')->select(['id','name']);
+    }
+
+    public function modifiedBy():BelongsTo{
+        return $this->belongsTo(self::class,'modified_by','id')->select(['id','name']);
+    }
+
     public function department(): BelongsTo
     {
         return $this->belongsTo(Department::class)->select(['id','name','description']);

@@ -36,9 +36,19 @@ export class UsersComponent implements OnInit {
     { key: 'department', label: 'Departamento', icon: 'fas fa-building' },
     { key: 'visibility', label: 'Visibilidade', icon: 'fas fa-eye' },
   ];
+  actions = [
+    {
+      label: '',
+      icon: 'fa fa-lock',
+      class: 'btn btn-outline-success',
+      title: 'Alterar senha',
+      callback: (item: User) => this.openModalChangePassword(item)
+    }
+  ];
   mode?: string;
   backendErrors: string[] = [];
   backendDepartmentErrors: string[] = [];
+  backendPasswordErrors: string[] = [];
   pages: number;
   total: number;
   id: string;
@@ -46,6 +56,8 @@ export class UsersComponent implements OnInit {
   user: User | null;
   departments: Department[] = [];
   modalDepartment: any;
+  modalChangePassword: any;
+  showPassword = false;
   private route = inject(ActivatedRoute);
   private formBuilder = inject(FormBuilder);
   private userService = inject(UserService);
@@ -63,6 +75,12 @@ export class UsersComponent implements OnInit {
       name:[''],
       description:['']
   })
+
+  formChangePassword: FormGroup = this.formBuilder.group({
+      id:[''],
+      password: [''],
+      password_confirmation:['']
+  });
   get message(): string {
     return this.userService.getMessage()();
   }
@@ -74,8 +92,8 @@ export class UsersComponent implements OnInit {
     this.mode = this.route.snapshot.data['mode'];
     this.user = this.userService.getUser()();
     this.showDepartments();
-    //Inicializando modal
     this.modalDepartment = new window.bootstrap.Modal(document.getElementById('departmentModal'))
+    this.modalChangePassword = new window.bootstrap.Modal(document.getElementById('changePasswordModal'))
     this.route.params.subscribe(params => {
       this.id = params['id'];
       if (this.mode === 'edit' && this.id) {
@@ -147,5 +165,22 @@ export class UsersComponent implements OnInit {
 
   openModalDepartment(){
     this.modalDepartment.show();
+  }
+
+  openModalChangePassword(user: User){
+    this.user = user;
+    this.modalChangePassword.show();
+  }
+
+  changePassword(){
+    const handleSuccess = () => { this.modalChangePassword().hide(); this.formChangePassword.reset();};
+    const handleErrors = (error: HttpErrorResponse) => { this.backendPasswordErrors = Object.values(error.error.errors); return of(null);};
+    this.userService.changePassword(this.formChangePassword.getRawValue())
+    .pipe(tap(handleSuccess), catchError(handleErrors))
+    .subscribe();
+  }
+
+  toggleShowPassword() {
+    this.showPassword = !this.showPassword;
   }
 }
