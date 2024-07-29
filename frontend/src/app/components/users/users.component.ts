@@ -177,15 +177,14 @@ export class UsersComponent implements OnInit {
       id:this.user?.id
     })
     const handleSuccess = () => {
-      this.modalChangePassword.hide(); // Use 'hide()' diretamente sem parênteses
+      this.modalChangePassword.hide();
       this.formChangePassword.reset();
     };
   
     const handleErrors = (error: HttpErrorResponse) => {
-      // Protege o acesso a error.error e error.error.errors
       this.backendPasswordErrors = error.error?.errors
         ? Object.values(error.error.errors)
-        : ['Erro desconhecido']; // Mensagem padrão se 'errors' não estiver presente
+        : ['Erro desconhecido'];
       return of(null);
     };
   

@@ -26,6 +26,8 @@ export class Token implements HttpInterceptor {
           this.router.navigate(['/']);
         } else if(error.status === 403){
           this.router.navigate(['/forbidden']);
+        } else if(error.status === 404){
+          this.router.navigate(['/not-found']);
         }
         return throwError(error);
       })
