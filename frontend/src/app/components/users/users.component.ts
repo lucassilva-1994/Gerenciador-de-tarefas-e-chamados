@@ -172,13 +172,31 @@ export class UsersComponent implements OnInit {
     this.modalChangePassword.show();
   }
 
-  changePassword(){
-    const handleSuccess = () => { this.modalChangePassword().hide(); this.formChangePassword.reset();};
-    const handleErrors = (error: HttpErrorResponse) => { this.backendPasswordErrors = Object.values(error.error.errors); return of(null);};
+  changePassword() {
+    this.formChangePassword.patchValue({
+      id:this.user?.id
+    })
+    const handleSuccess = () => {
+      this.modalChangePassword.hide(); // Use 'hide()' diretamente sem parênteses
+      this.formChangePassword.reset();
+    };
+  
+    const handleErrors = (error: HttpErrorResponse) => {
+      // Protege o acesso a error.error e error.error.errors
+      this.backendPasswordErrors = error.error?.errors
+        ? Object.values(error.error.errors)
+        : ['Erro desconhecido']; // Mensagem padrão se 'errors' não estiver presente
+      return of(null);
+    };
+  
     this.userService.changePassword(this.formChangePassword.getRawValue())
-    .pipe(tap(handleSuccess), catchError(handleErrors))
-    .subscribe();
+      .pipe(
+        tap(handleSuccess),
+        catchError(handleErrors)
+      )
+      .subscribe();
   }
+  
 
   toggleShowPassword() {
     this.showPassword = !this.showPassword;

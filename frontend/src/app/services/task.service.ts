@@ -4,10 +4,11 @@ import { CRUDService } from "./crud.service";
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { TaskComment } from "../models/TaskComment";
+import { environment } from './../../environments/environment';
 
 @Injectable({ providedIn: 'root'})
 export class TaskService extends CRUDService<Task>{
-    private pathApiUrl: string = 'http://127.0.0.1:8000/api/tasks/comments';
+    private pathApiUrl: string = environment.apiUrl + 'tasks/comments';
     constructor(httpClient: HttpClient){
         super(httpClient,'tasks');
     }
