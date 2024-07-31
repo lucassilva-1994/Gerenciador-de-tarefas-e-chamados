@@ -7,4 +7,5 @@ export class User extends Model{
     visibility: number;
     visibility_name: string;
     department: string;
+    password_expires_at: Date
 }

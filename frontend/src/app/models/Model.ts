@@ -3,7 +3,7 @@ import { User } from "./User";
 export class Model{
     id:string;
     sequence?: number;
-    name?: string;
+    name: string;
     description?: string;
     created_by?: User;
     modified_by?:User;

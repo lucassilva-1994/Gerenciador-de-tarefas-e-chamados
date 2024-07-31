@@ -52,6 +52,9 @@ trait ModelTrait
         if (in_array('modified_by', $fillable) && auth()->check()) {
             $data['modified_by'] = auth()->user()->id;
         }
+        if (in_array('password_expires_at', $fillable) && auth()->check()) {
+            $data['password_expires_at'] = now()->addDays(30);
+        }
         $data['updated_at'] = now();
         try {
             return response()->json([

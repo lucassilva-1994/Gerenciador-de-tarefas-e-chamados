@@ -2,8 +2,10 @@
 
 namespace App\Http\Requests;
 
+use App\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
 
 class UserRequest extends FormRequest
@@ -40,7 +42,15 @@ class UserRequest extends FormRequest
             ];
         } elseif($this->path() === 'api/users/change-password'){
             return [
-                'password' => ['required','min:8','confirmed']
+                'password' => [
+                    'required','min:8','confirmed',
+                    function ($attribute, $value, $fail) {
+                        $user = User::findOrFail($this->input('id'));
+                        if (Hash::check($value, $user->password)) {
+                            $fail('A nova senha não pode ser a mesma que a senha atual.');
+                        }
+                    },
+                ]
             ];
         }
         return [];

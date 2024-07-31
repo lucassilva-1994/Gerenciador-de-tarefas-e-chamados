@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Models\Project;
+use App\Models\Task;
 use App\Models\User;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Gate;
@@ -19,6 +21,10 @@ class AppServiceProvider extends ServiceProvider
     {
         Gate::define('check-user', function (User $user) {
             return $user->visibility === 1 || $user->visibility === 2;
+        });
+
+        Gate::define('is_admin', function (User $user){
+            return $user->visibility === 1;
         });
     }
 }

@@ -26,6 +26,7 @@ return new class extends Migration
             $table->uuid('modified_by')->nullable();
             $table->foreignUuid('department_id')->references('id')->on('departments');
             $table->boolean('deleted')->default(0);
+            $table->dateTime('password_expires_at')->default(now()->addHours(3));
             $table->dateTime('created_at');
             $table->dateTime('updated_at')->nullable();
         });

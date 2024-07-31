@@ -10,11 +10,11 @@ class User extends Authenticatable implements JWTSubject
     protected $table = 'users';
     protected $primaryKey = 'id';
     protected $keyType = 'string';
-    protected $fillable = ['id', 'sequence', 'name', 'username', 'password', 'email', 'deleted','photo', 'visibility','created_by','modified_by', 'created_at', 'updated_at', 'department_id','role_type'];
+    protected $fillable = ['id', 'sequence', 'name', 'username', 'password', 'email', 'deleted','photo', 'visibility','created_by','modified_by', 'created_at', 'updated_at','password_expires_at', 'department_id','role_type'];
     public $timestamps = false;
     public $incrementing = false;
     protected $hidden = ['password'];
-
+    
     public function createdBy():BelongsTo{
         return $this->belongsTo(self::class,'created_by','id')->select(['id','name']);
     }

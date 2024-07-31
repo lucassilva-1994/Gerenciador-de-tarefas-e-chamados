@@ -1,5 +1,6 @@
 <?php
 use App\Http\Middleware\FormatValidatorsErrors;
+use App\Http\Middleware\PasswordExpired;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -13,7 +14,6 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->append(FormatValidatorsErrors::class);
-        //$middleware->append(CheckUser::class);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

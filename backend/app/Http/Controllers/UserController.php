@@ -44,8 +44,16 @@ class UserController extends CRUDController
         ]);
     }
 
+    public function profile(){
+        return auth()->user()->load('department');
+    }
+
     public function changePassword(UserRequest $request){
-        return self::updateRecord(User::class, $request->only('password'),['id' => $request->id]);
+        if(self::updateRecord(User::class, $request->only('password'),['id' => $request->id])){
+            return response()->json([
+                'message' => 'Senha atualizada com sucesso.'
+            ]);
+        }
     }
 
     public function signOut() {

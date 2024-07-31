@@ -67,10 +67,7 @@ export class UserService extends CRUDService<User> {
     changePassword(user: User): Observable<{ message: string }> {
         return this.httpClient.put<{ message: string }>(`${apiUrl}/change-password`, user)
             .pipe(
-                take(1),
-                tap(response => {
-                    alert(response.message);
-                })
+                take(1)
             );
     }
 
@@ -79,5 +76,9 @@ export class UserService extends CRUDService<User> {
             .pipe(tap(response => {
                 console.log(response);
             }));
+    }
+
+    profile(): Observable<User> {
+        return this.httpClient.get<User>(`${this.apiUrl}/profile`);
     }
 }

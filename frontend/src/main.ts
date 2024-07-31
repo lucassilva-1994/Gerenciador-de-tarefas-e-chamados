@@ -5,9 +5,11 @@ import { provideRouter } from '@angular/router';
 import { APP_ROUTES } from './app/app.routes';
 import { HTTP_INTERCEPTORS, provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { Token } from './app/core/token.interceptor';
+import { MessageService } from './app/services/message.service';
 
 bootstrapApplication(AppComponent, {
   providers:[
+    MessageService,
     importProvidersFrom(BrowserModule),
     {
       provide: HTTP_INTERCEPTORS,

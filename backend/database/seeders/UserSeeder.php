@@ -12,7 +12,7 @@ class UserSeeder extends Seeder
     use ModelTrait;
     public function run(): void
     {
-        for ($i = 0; $i < 100; $i++) {
+        for ($i = 0; $i < 10000; $i++) {
             $name = self::replaceName(fake()->name());
             $email = self::generateEmail($name);
             $username = self::generateUsername($name);
