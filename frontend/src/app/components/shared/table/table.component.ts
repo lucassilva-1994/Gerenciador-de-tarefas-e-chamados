@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { DatePipe, NgIf, NgFor, NgClass } from '@angular/common';
+import { DatePipe, NgClass } from '@angular/common';
 import { Subject, Subscription, debounceTime, distinctUntilChanged } from 'rxjs';
 import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { GenericPipe } from './../../../pipes/generic.pipe';
@@ -11,7 +11,7 @@ import { GenericPipe } from './../../../pipes/generic.pipe';
   styleUrls: ['./table.component.css'],
   providers: [DatePipe, GenericPipe],
   standalone: true,
-  imports: [NgIf, RouterLink, ReactiveFormsModule, FormsModule, NgFor, NgClass]
+  imports: [RouterLink, ReactiveFormsModule, FormsModule, NgClass]
 })
 
 export class TableComponent<Model> implements OnInit, OnDestroy {

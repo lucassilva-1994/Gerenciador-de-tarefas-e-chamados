@@ -13,7 +13,7 @@ import { ButtonSubmitComponent } from '../shared/button-submit/button-submit.com
 import { MessagesValidatorsComponent } from '../shared/messages-validators/messages-validators.component';
 import { TableComponent } from '../shared/table/table.component';
 import { Department } from '../../models/Department';
-import { NgFor, NgIf } from '@angular/common';
+
 import { DepartmentService } from '../../services/department.service';
 
 declare var window: any;
@@ -22,9 +22,15 @@ declare var window: any;
   selector: 'app-users',
   standalone: true,
   imports: [
-    LayoutComponent, MessageComponent, LoadingComponent, CardFormComponent, ReactiveFormsModule,
-    ButtonSubmitComponent, MessagesValidatorsComponent, TableComponent, NgFor, NgIf
-  ],
+    LayoutComponent,
+    MessageComponent,
+    LoadingComponent,
+    CardFormComponent,
+    ReactiveFormsModule,
+    ButtonSubmitComponent,
+    MessagesValidatorsComponent,
+    TableComponent
+],
   templateUrl: './users.component.html',
   styleUrl: './users.component.css'
 })

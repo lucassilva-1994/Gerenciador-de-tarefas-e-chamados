@@ -5,13 +5,13 @@ import { UserService } from '../../services/user.service';
 import { MessagesValidatorsComponent } from '../shared/messages-validators/messages-validators.component';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { catchError, of, tap } from 'rxjs';
-import { CommonModule, NgIf } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { MessageService } from '../../services/message.service';
 
 @Component({
   standalone: true,
-  imports: [LayoutComponent, MessagesValidatorsComponent, ReactiveFormsModule, CommonModule, NgIf],
+  imports: [LayoutComponent, MessagesValidatorsComponent, ReactiveFormsModule, DatePipe],
   templateUrl: './change-password.component.html',
   styleUrl: './change-password.component.css'
 })

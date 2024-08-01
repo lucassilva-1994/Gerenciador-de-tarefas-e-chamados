@@ -1,3 +1,5 @@
-<div class="alert" [ngClass]="errorOccurred ? 'alert-danger' : 'alert-success'" *ngIf="message">
+@if (message) {
+  <div class="alert" [ngClass]="errorOccurred ? 'alert-danger' : 'alert-success'">
     {{ message }}
-</div>
+  </div>
+}

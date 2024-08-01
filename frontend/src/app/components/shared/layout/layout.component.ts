@@ -1,4 +1,4 @@
-import { NgIf } from '@angular/common';
+
 import { Component, inject, Input } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { User } from '../../../models/User';
@@ -7,7 +7,7 @@ import { UserService } from '../../../services/user.service';
 @Component({
   selector: 'app-layout',
   standalone: true,
-  imports: [RouterLink, NgIf],
+  imports: [RouterLink],
   templateUrl: './layout.component.html',
   styleUrl: './layout.component.css'
 })

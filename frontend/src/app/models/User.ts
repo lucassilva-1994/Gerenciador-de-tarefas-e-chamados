@@ -1,3 +1,4 @@
+import { Department } from "./Department";
 import { Model } from "./Model";
 
 export class User extends Model{
@@ -6,6 +7,6 @@ export class User extends Model{
     photo: string;
     visibility: number;
     visibility_name: string;
-    department: string;
+    department: Department;
     password_expires_at: Date
 }

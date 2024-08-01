@@ -9,7 +9,7 @@ export const APP_ROUTES: Routes = [
     { path: 'projects', loadChildren: () => import('./components/projects/projects.routes').then(r => r.PROJECT_ROUTES)},
     { path: 'departments', loadChildren: () => import('./components/departments/departments.routes').then(r => r.DEPARTMENT_ROUTES)},
     { path: 'users', loadChildren: () => import('./components/users/users.routes').then(r => r.USER_ROUTES)},
-    { path: 'forbidden', loadComponent:() => ForbiddenComponent},
-    { path: 'not-found', loadComponent:() => NotFoundComponent},
-    { path: 'change-password', loadComponent:() => ChangePasswordComponent}
+    { path: 'forbidden', loadComponent:() => ForbiddenComponent, title: 'Acesso negado'},
+    { path: 'not-found', loadComponent:() => NotFoundComponent, title: 'Página não encontrada'},
+    { path: 'change-password', loadComponent:() => ChangePasswordComponent, title: 'Alterar senha'}
 ];

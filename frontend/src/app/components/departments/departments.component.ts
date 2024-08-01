@@ -7,7 +7,7 @@ import { ButtonSubmitComponent } from '../shared/button-submit/button-submit.com
 import { DepartmentService } from '../../services/department.service';
 import { Department } from '../../models/Department';
 import { catchError, of, tap } from 'rxjs';
-import { NgFor, NgIf } from '@angular/common';
+
 import { TableComponent } from '../shared/table/table.component';
 import { HttpErrorResponse } from '@angular/common/http';
 import { MessageComponent } from './../shared/message/message.component';
@@ -18,10 +18,15 @@ import { LoadingComponent } from '../shared/loading/loading.component';
   selector: 'app-departments',
   standalone: true,
   imports: [
-    LayoutComponent, CardFormComponent, ReactiveFormsModule,
-    ButtonSubmitComponent, NgFor, TableComponent, NgIf, MessagesValidatorsComponent,
-    MessageComponent, LoadingComponent
-  ],
+    LayoutComponent,
+    CardFormComponent,
+    ReactiveFormsModule,
+    ButtonSubmitComponent,
+    TableComponent,
+    MessagesValidatorsComponent,
+    MessageComponent,
+    LoadingComponent
+],
   templateUrl: './departments.component.html',
   styleUrl: './departments.component.css'
 })

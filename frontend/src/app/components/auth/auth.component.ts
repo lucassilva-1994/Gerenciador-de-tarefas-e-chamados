@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
@@ -10,7 +10,7 @@ import { MessagesValidatorsComponent } from '../shared/messages-validators/messa
 @Component({
   selector: 'app-auth',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink, MessagesValidatorsComponent],
+  imports: [ReactiveFormsModule, RouterLink, MessagesValidatorsComponent],
   templateUrl: './auth.component.html',
   styleUrl: './auth.component.css'
 })

@@ -6,7 +6,7 @@ import { ActivatedRoute } from '@angular/router';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { Project } from '../../models/Project';
 import { User } from '../../models/User';
-import { NgClass, NgFor, NgIf } from '@angular/common';
+import { NgClass } from '@angular/common';
 import { TaskService } from '../../services/task.service';
 import { HttpErrorResponse } from '@angular/common/http';
 import { catchError, of, tap } from 'rxjs';
@@ -25,10 +25,17 @@ declare var window: any;
   selector: 'app-tasks',
   standalone: true,
   imports: [
-    ReactiveFormsModule, LayoutComponent, ButtonSubmitComponent, CardFormComponent,
-    NgFor, NgIf, MessageComponent, LoadingComponent, TableComponent, MessagesValidatorsComponent,
-    NgClass, FormsModule
-  ],
+    ReactiveFormsModule,
+    LayoutComponent,
+    ButtonSubmitComponent,
+    CardFormComponent,
+    MessageComponent,
+    LoadingComponent,
+    TableComponent,
+    MessagesValidatorsComponent,
+    NgClass,
+    FormsModule
+],
   templateUrl: './tasks.component.html',
   styleUrl: './tasks.component.css'
 })
