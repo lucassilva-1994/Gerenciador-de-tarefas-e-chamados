@@ -23,13 +23,13 @@ Route::middleware(['auth:api', PasswordExpired::class])->group(function(){
         Route::delete('delete/{id}','delete')->can('check-user');
     });
 
-    Route::controller(DepartmentController::class)->middleware(['can:is_admin'])->prefix('departments')->group(function(){
-        Route::get('show','show');
+    Route::controller(DepartmentController::class)->prefix('departments')->group(function(){
+        Route::get('show','show')->can('is_admin');
         Route::get('show-by-id/{id}','showById');
         Route::get('show-without-pagination','showWithoutPagination');
-        Route::post('store','store');
-        Route::put('update/{id}','update');
-        Route::delete('delete/{id}','delete');
+        Route::post('store','store')->can('is_admin');
+        Route::put('update/{id}','update')->can('is_admin');
+        Route::delete('delete/{id}','delete')->can('is_admin');
     });
     Route::controller(ProjectController::class)->prefix('projects')->group(function(){
         Route::get('show','show');

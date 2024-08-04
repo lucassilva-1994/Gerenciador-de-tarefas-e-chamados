@@ -20,11 +20,11 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Gate::define('check-user', function (User $user) {
-            return $user->visibility === 1 || $user->visibility === 2;
+            return $user->visibility === 'Administrador' || $user->visibility === 'Gerente';
         });
 
         Gate::define('is_admin', function (User $user){
-            return $user->visibility === 1;
+            return $user->visibility === 'Administrador';
         });
     }
 }

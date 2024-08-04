@@ -58,9 +58,9 @@ export class CRUDService<Model> {
             );
     }
 
-    store(model: Model | FormData): Observable<{ message: string }> {
+    store(model: Model | FormData): Observable<{ message: string; id?: string }> {
         this.loading.set(true);
-        return this.httpClient.post<{ message: string }>(`${this.apiUrl}/store`, model)
+        return this.httpClient.post<{ message: string; id?: string }>(`${this.apiUrl}/store`, model)
             .pipe(
                 take(1),
                 finalize(() => this.loading.set(false)),

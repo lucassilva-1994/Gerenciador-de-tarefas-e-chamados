@@ -34,13 +34,40 @@ class UserRequest extends FormRequest
             ];
         } elseif($this->path() === 'api/users/store'){
             return [
-                'name' => ['required','min:3','max:100','regex:/^([A-Z][a-z]*)(\s[A-Z][a-z]*)*$/'],
+                'name' => ['required','min:3','max:100'],
                 'username' => ['required','min:3','max:100','unique:users,username'],
                 'email' => ['required','max:100','email','email:dns','unique:users,email'],
                 'password' => ['required','min:8','confirmed'],
-                'department_id' => Rule::requiredIf(auth()->user()->visibility == 1)
+                'visibility' => [
+                    'required',
+                    Rule::in(['Administrador', 'Gerente', 'Operacional']),
+                    function ($attribute, $value, $fail) {
+                        if (auth()->user()->visibility === 'Gerente' && $value === 'Administrador') {
+                            $fail('Você não tem permissão para cadastrar Administradores.');
+                        }
+                    }
+                ],
+                'department_id' => Rule::requiredIf(auth()->user()->visibility == 'Administrador')
             ];
-        } elseif($this->path() === 'api/users/change-password'){
+        } elseif($this->path() === 'api/users/update/'.$this->id){
+            return [
+                'name' => ['required','min:3','max:100'],
+                'username' => ['required','min:3','max:100', Rule::unique('users')->ignore($this->id)],
+                'email' => ['required','max:100','email','email:dns',Rule::unique('users')->ignore($this->id)],
+                'visibility' => [
+                    'required',
+                    Rule::in(['Administrador', 'Gerente', 'Operacional']),
+                    function ($attribute, $value, $fail) {
+                        if (auth()->user()->visibility === 'Gerente' && $value === 'Administrador') {
+                            $fail('Você não tem permissão para cadastrar/alterar Administradores.');
+                        }
+                    }
+                ],
+                'department_id' => Rule::requiredIf(auth()->user()->visibility == 'Administrador')
+            ];
+        }
+        
+        elseif($this->path() === 'api/users/change-password'){
             return [
                 'password' => [
                     'required','min:8','confirmed',

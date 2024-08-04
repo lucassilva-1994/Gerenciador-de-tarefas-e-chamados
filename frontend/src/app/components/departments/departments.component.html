@@ -1,4 +1,4 @@
-<app-layout title="Departamentos">
+<app-layout title="Departamentos  {{ total ? ' (' + total + ')' : '' }}">
     <app-message [message]="message"></app-message>
     <app-loading [loading]="loading"></app-loading>
     <app-card-form>

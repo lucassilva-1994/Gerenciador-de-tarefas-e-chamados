@@ -15,6 +15,7 @@ import { TableComponent } from '../shared/table/table.component';
 import { Department } from '../../models/Department';
 
 import { DepartmentService } from '../../services/department.service';
+import { NgClass, NgFor, NgIf } from '@angular/common';
 
 declare var window: any;
 
@@ -29,7 +30,8 @@ declare var window: any;
     ReactiveFormsModule,
     ButtonSubmitComponent,
     MessagesValidatorsComponent,
-    TableComponent
+    TableComponent,
+    NgFor, NgIf, NgClass
 ],
   templateUrl: './users.component.html',
   styleUrl: './users.component.css'
@@ -72,7 +74,7 @@ export class UsersComponent implements OnInit {
     name: [''],
     email: [''],
     username:[''],
-    visibility:[3],
+    visibility:['Operacional'],
     password:[''],
     password_confirmation:[''],
     department_id: ['']
@@ -94,6 +96,7 @@ export class UsersComponent implements OnInit {
   get loading(): boolean {
     return this.userService.getLoading()();
   }
+
   ngOnInit(): void {
     this.mode = this.route.snapshot.data['mode'];
     this.user = this.userService.getUser()();
@@ -156,7 +159,10 @@ export class UsersComponent implements OnInit {
 
   onSubmitDepartment(){
     const form = this.formDepartment.getRawValue() as Department;
-    const handleSuccess = () => {
+    const handleSuccess = (response: {message: string; id?:string}) => {
+      this.form.patchValue({
+        department_id: response.id
+      });
       this.departmentService.showWithoutPagination(['id','name']).subscribe(response => this.departments = response)
       this.backendDepartmentErrors = [];
       this.modalDepartment.hide();

@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('email', 100)->unique();
             $table->string('password', 60);
             $table->string('photo', 100)->nullable();
-            $table->tinyInteger('visibility')->default(3)
+            $table->string('visibility')->default('Operacional')
             ->comment('User visibility: 
                       1 = SUPER ADMIN - Full access to all areas of the system.
                       2 = MANAGER - Access to tasks and data for their department.

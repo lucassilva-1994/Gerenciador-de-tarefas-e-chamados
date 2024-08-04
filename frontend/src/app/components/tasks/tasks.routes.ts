@@ -2,6 +2,7 @@ import { Routes } from '@angular/router';
 import { TasksComponent } from './tasks.component';
 import { UserResolver } from '../../resolvers/user.resolver';
 import { ProjectResolver } from '../../resolvers/project.resolver';
+import { DepartmentResolver } from '../../resolvers/department.resolver';
 
 export const TASK_ROUTES: Routes = [
     {
@@ -21,7 +22,8 @@ export const TASK_ROUTES: Routes = [
         },
         resolve: {
             users: UserResolver,
-            projects: ProjectResolver
+            projects: ProjectResolver,
+            departments: DepartmentResolver
         }
     },
     {
@@ -33,7 +35,8 @@ export const TASK_ROUTES: Routes = [
         },
         resolve: {
             users: UserResolver,
-            projects: ProjectResolver
+            projects: ProjectResolver,
+            departments: DepartmentResolver
         }
     }
 ]

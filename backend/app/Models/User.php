@@ -48,8 +48,7 @@ class User extends Authenticatable implements JWTSubject
             'email' => $this->email,
             'department' => $this->department->name ?? 'Departamento inativo',
             'username' => $this->username,
-            'visibility' => $this->visibility,
-            'visibility_name' => $this->visibility == 1 ? 'Administrador' : ($this->visibility == 2 ? 'Gerente' : 'Operacional')
+            'visibility' => $this->visibility
         ];
     }
 }

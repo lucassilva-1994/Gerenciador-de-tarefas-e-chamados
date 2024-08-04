@@ -12,7 +12,7 @@ class UserSeeder extends Seeder
     use ModelTrait;
     public function run(): void
     {
-        for ($i = 0; $i < 10000; $i++) {
+        for ($i = 0; $i < 100; $i++) {
             $name = self::replaceName(fake()->name());
             $email = self::generateEmail($name);
             $username = self::generateUsername($name);
@@ -22,7 +22,7 @@ class UserSeeder extends Seeder
                     'email' => $email,
                     'username' => $username,
                     'password' => '12345678910',
-                    'visibility' => Arr::random([1,2,3]),
+                    'visibility' => Arr::random(['Administrador','Gerente','Operacional']),
                     'department_id' => Arr::random(Department::get()->pluck('id')->toArray())
                 ]);
             }

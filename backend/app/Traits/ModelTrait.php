@@ -23,16 +23,18 @@ trait ModelTrait
         if (in_array('created_by', $fillable) && auth()->check()) {
             $data['created_by'] = auth()->user()->id;
         }
-        if (in_array('owner_id', $fillable) && auth()->check() && auth()->user()->visibility == 3) {
+        if (in_array('owner_id', $fillable) && auth()->check() && auth()->user()->visibility == 'Operacional') {
             $data['owner_id'] = auth()->user()->id;
         }
-        if (in_array('department_id', $fillable) && auth()->check() && auth()->user()->visibility == 2) {
+        if (in_array('department_id', $fillable) && auth()->check() && auth()->user()->visibility == 'Gerente') {
             $data['department_id'] = auth()->user()->department_id;
         }
         try {
+            $record = $model::updateOrCreate(['id' => $data['id']], $data);
             return response()->json([
                 'message' => 'Os dados foram cadastrados com sucesso.',
-                'data' => $model::updateOrCreate($data)
+                'data' => $record,
+                'id' => $record->id 
             ], 201);
         } catch (\Throwable $th) {
             return response()->json([
@@ -54,6 +56,9 @@ trait ModelTrait
         }
         if (in_array('password_expires_at', $fillable) && auth()->check()) {
             $data['password_expires_at'] = now()->addDays(30);
+        }
+        if (in_array('department_id', $fillable) && auth()->check() && auth()->user()->visibility == 'Gerente') {
+            $data['department_id'] = auth()->user()->department_id;
         }
         $data['updated_at'] = now();
         try {

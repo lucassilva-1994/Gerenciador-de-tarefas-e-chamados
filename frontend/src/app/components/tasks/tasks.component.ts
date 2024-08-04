@@ -18,6 +18,7 @@ import { UserService } from '../../services/user.service';
 import { MessagesValidatorsComponent } from '../shared/messages-validators/messages-validators.component';
 import { ProjectService } from '../../services/project.service';
 import { TaskComment } from '../../models/TaskComment';
+import { Department } from '../../models/Department';
 
 declare var window: any;
 
@@ -41,10 +42,10 @@ declare var window: any;
 })
 export class TasksComponent implements OnInit {
   cols: { key: string, label: string, icon?: string }[] = [
-    { key: 'title', label: 'Title', icon: 'fas fa-tag' },
+    { key: 'title', label: 'Titulo', icon: 'fas fa-tag' },
     { key: 'description', label: 'Descrição', icon: 'fas fa-info-circle' },
     { key: 'owner', label: 'Responsável', icon: 'fas fa-user' },
-    { key: 'project', label: 'Projeto', icon: 'fas fa-user' },
+    { key: 'project', label: 'Projeto', icon: 'fas fa-project-diagram' },
     { key: 'is_done', label: 'Status', icon: 'fas fa-tasks' },
     { key: 'created_by', label: 'Criado por', icon: 'fas fa-user' },
     { key: 'created_at', label: 'Criado em', icon: 'fas fa-calendar-plus' },
@@ -61,6 +62,7 @@ export class TasksComponent implements OnInit {
   ];
   mode?: string;
   projects: Project[] = [];
+  departments: Department[] = [];
   user: User | null = null;
   users: User[] = [];
   tasks: Task[] = [];
@@ -68,6 +70,7 @@ export class TasksComponent implements OnInit {
   task: Task;
   backendErrors: string[] = [];
   backendProjectErrors: string[] = [];
+  backendUserErrors: string[] = [];
   pages: number;
   total: number;
 
@@ -79,6 +82,9 @@ export class TasksComponent implements OnInit {
 
   id: string;
   modalProject: any;
+  modalUser: any;
+  showPassword = false;
+  
   private route = inject(ActivatedRoute);
   private taskService = inject(TaskService);
   private projectService = inject(ProjectService);
@@ -95,6 +101,16 @@ export class TasksComponent implements OnInit {
   formProject: FormGroup = this.formBuilder.group({
     name: [''],
     description: ['']
+  });
+
+  formUser: FormGroup = this.formBuilder.group({
+    name:[''],
+    username: [''],
+    email:[''],
+    visibility:['Operacional'],
+    department_id:[''],
+    password:[''],
+    password_confirmation:['']
   });
 
   get message(): string {
@@ -114,7 +130,9 @@ export class TasksComponent implements OnInit {
   ngOnInit(): void {
     this.user = this.userService.getUser()();
     this.mode = this.route.snapshot.data['mode'];
+    this.departments = this.route.snapshot.data['departments'];
     this.modalProject = new window.bootstrap.Modal(document.getElementById('projectModal'))
+    this.modalUser = new window.bootstrap.Modal(document.getElementById('userModal'))
     this.route.params.subscribe(params => {
       this.id = params['id'];
       if (this.mode === 'edit' && this.id) {
@@ -186,11 +204,6 @@ export class TasksComponent implements OnInit {
     this.users = this.route.snapshot.data['users'];
   }
 
-  getUserName(id: string): string | undefined {
-    const selectedUser = this.users.find(user => user.id === id);
-    return selectedUser ? selectedUser?.name : '';
-  }
-
   onSubmit() {
     const form = this.form.getRawValue() as Task;
 
@@ -227,7 +240,11 @@ export class TasksComponent implements OnInit {
 
   onSubmitProject() {
     const form = this.formProject.getRawValue() as Project;
-    const handleSuccess = () => {
+    const handleSuccess = (response:{message: string; id?: string}) => {
+      this.form.patchValue({
+        project_id: response.id
+      });
+      this.formProject.reset();
       this.projectService.showWithoutPagination(['id', 'name']).subscribe(response => this.projects = response)
       this.backendProjectErrors = [];
       this.modalProject.hide();
@@ -237,6 +254,25 @@ export class TasksComponent implements OnInit {
       return of(null);
     };
     this.projectService.store(form)
+      .pipe(tap(handleSuccess), catchError(handleErrors)).subscribe();
+  }
+
+  onSubmitUser() {
+    const form = this.formUser.getRawValue() as User;
+    const handleSuccess = (response:{message: string; id?: string}) => {
+      this.form.patchValue({
+        owner_id: response.id
+      });
+      this.formProject.reset();
+      this.userService.showWithoutPagination(['id', 'name']).subscribe(response => this.users = response)
+      this.backendUserErrors = [];
+      this.modalUser.hide();
+    };
+    const handleErrors = (error: HttpErrorResponse) => {
+      this.backendUserErrors = Object.values(error.error.errors);
+      return of(null);
+    };
+    this.userService.store(form)
       .pipe(tap(handleSuccess), catchError(handleErrors)).subscribe();
   }
 
@@ -266,5 +302,13 @@ export class TasksComponent implements OnInit {
 
   openModalProject() {
     this.modalProject.show();
+  }
+
+  openModalUser(){
+    this.modalUser.show();
+  }
+
+  toggleShowPassword() {
+    this.showPassword = !this.showPassword;
   }
 }

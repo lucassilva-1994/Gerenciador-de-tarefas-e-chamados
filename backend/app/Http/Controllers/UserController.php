@@ -13,7 +13,7 @@ class UserController extends CRUDController
             User::class,
             UserRequest::class,
             ['department','createdBy','modifiedBy'],
-            ['name', 'username', 'email', 'department' => ['departments.name']]
+            ['name', 'username', 'email', 'visibility','department' => ['departments.name']]
         );
     }
     

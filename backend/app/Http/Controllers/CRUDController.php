@@ -1,8 +1,6 @@
 <?php
 
 namespace App\Http\Controllers;
-
-use App\Models\Scopes\VisibilityScope;
 use App\Models\User;
 use App\Traits\ModelTrait;
 
@@ -62,8 +60,9 @@ class CRUDController extends Controller
         }
         if ($this->model === User::class) {
             $user = auth()->user();
-            if ($user->visibility === 2) {
+            if ($user->visibility === 'Gerente') {
                 $query->where('department_id', $user->department_id);
+                $query->where('visibility','!=','Administrador');
             }
             $query->where('deleted',0);
         }
@@ -81,7 +80,7 @@ class CRUDController extends Controller
         $query = $this->model::select($fields)->with($relationships);
         if ($this->model === User::class) {
             $user = auth()->user();
-            if ($user->visibility === 2) {
+            if ($user->visibility === 'Gerente') {
                 $query->where('department_id', $user->department_id);
             }
             $query->where('deleted',0);

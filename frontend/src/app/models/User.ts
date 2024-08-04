@@ -5,8 +5,7 @@ export class User extends Model{
     username: string;
     email: string;
     photo: string;
-    visibility: number;
-    visibility_name: string;
+    visibility: string | undefined;
     department: Department;
     password_expires_at: Date
 }
